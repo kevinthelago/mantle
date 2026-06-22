@@ -1,3 +1,4 @@
 mod service;
 
-pub use service::{setup, MantlePlugin};
+#[allow(unused_imports)]
+pub use service::{MantlePlugin, setup};

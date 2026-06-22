@@ -2,7 +2,7 @@ pub mod loader;
 pub mod schema;
 pub mod watcher;
 
-pub use schema::{Config, OutputConfig, PowerAction};
+pub use schema::{Config, PowerAction};
 
 use std::sync::Arc;
 use tokio::sync::{watch, RwLock};
