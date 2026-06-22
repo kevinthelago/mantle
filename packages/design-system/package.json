@@ -1,7 +1,6 @@
 {
   "name": "@mantle/design-system",
   "version": "0.1.0",
-  "private": true,
   "description": "Mantle Claude-style design system — tokens, primitives, and components",
   "type": "module",
   "main": "./dist/index.js",
@@ -28,10 +27,8 @@
     "build": "tsc -p tsconfig.build.json && vite build",
     "build:tokens": "node --loader ts-node/esm scripts/build-tokens.ts",
     "build:storybook": "storybook build",
-    "build-storybook": "storybook build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit",
     "smoke": "node --loader ts-node/esm scripts/smoke.ts",
     "storybook": "storybook dev -p 6006"
