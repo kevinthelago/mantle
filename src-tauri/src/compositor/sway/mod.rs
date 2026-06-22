@@ -45,9 +45,8 @@ impl SwayBackend {
         let query = Arc::new(Mutex::new(conn));
         let supervisor = Arc::new(Supervisor::new());
 
-        let handle = supervisor.spawn(move || {
-            Box::pin(async move { connect_event_stream().await })
-        });
+        let handle =
+            supervisor.spawn(move || Box::pin(async move { connect_event_stream().await }));
 
         Ok(Self {
             query,
@@ -118,10 +117,8 @@ impl CompositorBackend for SwayBackend {
         })?;
 
         // --- Workspaces ---
-        let mut workspaces: Vec<Workspace> = sway_workspaces
-            .iter()
-            .map(workspace_from_sway)
-            .collect();
+        let mut workspaces: Vec<Workspace> =
+            sway_workspaces.iter().map(workspace_from_sway).collect();
 
         // --- Outputs (mark which one has focus via the focused workspace) ---
         let focused_ws_output = sway_workspaces

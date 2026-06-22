@@ -73,14 +73,12 @@ pipewire = { version = "0.8", optional = true }
 
 [features]
 pipewire-audio = ["dep:pipewire"]
+generate_bindings = []
 
 # Compositor IPC -- requires Unix sockets (Linux/macOS)
 [target.'cfg(unix)'.dependencies]
 swayipc = "4"
 hyprland = "0.4.0-beta.3"
-
-[features]
-generate_bindings = []
 
 [dev-dependencies]
 tokio = { version = "1", features = ["full", "test-util"] }

@@ -62,14 +62,11 @@ pub fn output_from_sway(o: &SwayOutput) -> Output {
 ///
 /// Expects `node` to be a leaf container (actual window), not a split container.
 pub fn window_from_node(node: &Node) -> Window {
-    let app_id = node
-        .app_id
-        .clone()
-        .or_else(|| {
-            node.window_properties
-                .as_ref()
-                .and_then(|p| p.class.clone())
-        });
+    let app_id = node.app_id.clone().or_else(|| {
+        node.window_properties
+            .as_ref()
+            .and_then(|p| p.class.clone())
+    });
 
     let title = node
         .name
@@ -81,10 +78,7 @@ pub fn window_from_node(node: &Node) -> Window {
         })
         .unwrap_or_default();
 
-    let fullscreen = node
-        .fullscreen_mode
-        .map(|m| m != 0)
-        .unwrap_or(false);
+    let fullscreen = node.fullscreen_mode.map(|m| m != 0).unwrap_or(false);
 
     Window {
         id: node.id as u64,
@@ -102,10 +96,7 @@ pub fn window_from_node(node: &Node) -> Window {
 /// Recursively collect all leaf windows from a sway tree.
 pub fn collect_windows(node: &Node, out: &mut Vec<Window>) {
     let is_leaf = node.nodes.is_empty() && node.floating_nodes.is_empty();
-    let is_window = matches!(
-        node.node_type,
-        NodeType::Con | NodeType::FloatingCon
-    ) && is_leaf;
+    let is_window = matches!(node.node_type, NodeType::Con | NodeType::FloatingCon) && is_leaf;
 
     if is_window {
         out.push(window_from_node(node));

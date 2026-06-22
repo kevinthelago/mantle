@@ -5,7 +5,9 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use futures::stream::BoxStream;
 use hyprland::data::{Client, Clients, Monitor, Monitors, Workspace, Workspaces};
-use hyprland::dispatch::{Dispatch, DispatchType, WindowIdentifier, WorkspaceIdentifierWithSpecial};
+use hyprland::dispatch::{
+    Dispatch, DispatchType, WindowIdentifier, WorkspaceIdentifierWithSpecial,
+};
 use hyprland::event_listener::EventListener;
 use hyprland::shared::{HyprData, HyprDataActiveOptional, HyprDataVec};
 use tokio::sync::{mpsc, Mutex};
@@ -222,15 +224,24 @@ impl CompositorBackend for HyprlandBackend {
     async fn snapshot(&self) -> Result<CompositorSnapshot, CompositorError> {
         // Fetch everything concurrently.
         let (workspaces_raw, clients_raw, monitors_raw) = tokio::try_join!(
-            async { Workspaces::get_async().await.map_err(|e| CompositorError::HyprlandIpc(e.to_string())) },
-            async { Clients::get_async().await.map_err(|e| CompositorError::HyprlandIpc(e.to_string())) },
-            async { Monitors::get_async().await.map_err(|e| CompositorError::HyprlandIpc(e.to_string())) },
+            async {
+                Workspaces::get_async()
+                    .await
+                    .map_err(|e| CompositorError::HyprlandIpc(e.to_string()))
+            },
+            async {
+                Clients::get_async()
+                    .await
+                    .map_err(|e| CompositorError::HyprlandIpc(e.to_string()))
+            },
+            async {
+                Monitors::get_async()
+                    .await
+                    .map_err(|e| CompositorError::HyprlandIpc(e.to_string()))
+            },
         )?;
 
-        let active_client = Client::get_active_async()
-            .await
-            .ok()
-            .flatten();
+        let active_client = Client::get_active_async().await.ok().flatten();
 
         // --- Outputs ---
         let outputs: Vec<Output> = monitors_raw.iter().map(output_from_hyprland).collect();
@@ -309,13 +320,11 @@ impl CompositorBackend for HyprlandBackend {
 
     async fn dispatch(&self, action: CompositorAction) -> Result<(), CompositorError> {
         match action {
-            CompositorAction::FocusWorkspace { id } => {
-                Dispatch::call_async(DispatchType::Workspace(
-                    WorkspaceIdentifierWithSpecial::Id(id),
-                ))
-                .await
-                .map_err(|e| CompositorError::HyprlandIpc(e.to_string()))
-            }
+            CompositorAction::FocusWorkspace { id } => Dispatch::call_async(
+                DispatchType::Workspace(WorkspaceIdentifierWithSpecial::Id(id)),
+            )
+            .await
+            .map_err(|e| CompositorError::HyprlandIpc(e.to_string())),
             CompositorAction::FocusWindow { id } => {
                 let addr = format!("0x{id:x}");
                 Dispatch::call_async(DispatchType::FocusWindow(WindowIdentifier::Address(
@@ -352,18 +361,14 @@ impl CompositorBackend for HyprlandBackend {
                 .await
                 .map_err(|e| CompositorError::HyprlandIpc(e.to_string()))
             }
-            CompositorAction::ToggleFullscreen { id } => {
-                Dispatch::call_async(DispatchType::FullscreenWindow(
-                    hyprland::dispatch::FullscreenType::Real,
-                ))
+            CompositorAction::ToggleFullscreen { id } => Dispatch::call_async(
+                DispatchType::FullscreenWindow(hyprland::dispatch::FullscreenType::Real),
+            )
+            .await
+            .map_err(|e| CompositorError::HyprlandIpc(e.to_string())),
+            CompositorAction::Exec { command } => Dispatch::call_async(DispatchType::Exec(command))
                 .await
-                .map_err(|e| CompositorError::HyprlandIpc(e.to_string()))
-            }
-            CompositorAction::Exec { command } => {
-                Dispatch::call_async(DispatchType::Exec(command))
-                    .await
-                    .map_err(|e| CompositorError::HyprlandIpc(e.to_string()))
-            }
+                .map_err(|e| CompositorError::HyprlandIpc(e.to_string())),
             CompositorAction::SetLayout { .. } => {
                 // Hyprland does not expose a generic layout switch via IPC; no-op.
                 Ok(())

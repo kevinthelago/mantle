@@ -10,9 +10,7 @@ use tauri::{
 use tracing::error;
 
 use super::{
-    action::CompositorAction,
-    bridge::CompositorState,
-    event::CompositorEvent,
+    action::CompositorAction, bridge::CompositorState, event::CompositorEvent,
     types::CompositorSnapshot,
 };
 
@@ -49,9 +47,7 @@ pub async fn compositor_dispatch(
 
 /// Return the name of the active backend (`"sway"` or `"hyprland"`).
 #[tauri::command]
-pub async fn compositor_backend_name(
-    state: State<'_, CompositorState>,
-) -> Result<String, String> {
+pub async fn compositor_backend_name(state: State<'_, CompositorState>) -> Result<String, String> {
     Ok(state.backend.read().await.name().to_owned())
 }
 
@@ -97,8 +93,7 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
                 {
                     use tauri::Emitter;
                     error!("compositor: not on a Unix system — sway/Hyprland unavailable");
-                    let _ = app_handle
-                        .emit("compositor://event", CompositorEvent::Disconnected);
+                    let _ = app_handle.emit("compositor://event", CompositorEvent::Disconnected);
                 }
             });
             Ok(())

@@ -2,9 +2,7 @@ use async_trait::async_trait;
 use futures::stream::BoxStream;
 
 use super::{
-    action::CompositorAction,
-    error::CompositorError,
-    event::CompositorEvent,
+    action::CompositorAction, error::CompositorError, event::CompositorEvent,
     types::CompositorSnapshot,
 };
 

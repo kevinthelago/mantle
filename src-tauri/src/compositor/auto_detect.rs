@@ -1,9 +1,7 @@
 use tracing::info;
 
 use super::{
-    backend::CompositorBackend,
-    error::CompositorError,
-    hyprland::HyprlandBackend,
+    backend::CompositorBackend, error::CompositorError, hyprland::HyprlandBackend,
     sway::SwayBackend,
 };
 

@@ -9,7 +9,6 @@
 /// Testing the conversion layer directly (rather than the full IPC stack) lets
 /// CI verify normalization correctness without sway/Hyprland running.  End-to-end
 /// IPC tests belong in a separate suite that gates on a compositor fixture.
-
 use mantle_lib::compositor::{
     hyprland::convert as hc,
     sway::convert as sc,
@@ -131,7 +130,9 @@ mod sway_fixtures {
 }
 
 mod hyprland_fixtures {
-    use hyprland::data::{Client as HyprClient, Monitor as HyprMonitor, Workspace as HyprWorkspace};
+    use hyprland::data::{
+        Client as HyprClient, Monitor as HyprMonitor, Workspace as HyprWorkspace,
+    };
 
     pub fn workspace(id: i32, name: &str, monitor: &str) -> HyprWorkspace {
         serde_json::from_value(serde_json::json!({
@@ -177,7 +178,13 @@ mod hyprland_fixtures {
         .unwrap()
     }
 
-    pub fn client(addr_hex: u64, title: &str, class: &str, ws_id: i32, focused: bool) -> HyprClient {
+    pub fn client(
+        addr_hex: u64,
+        title: &str,
+        class: &str,
+        ws_id: i32,
+        focused: bool,
+    ) -> HyprClient {
         serde_json::from_value(serde_json::json!({
             "address": format!("0x{addr_hex:x}"),
             "mapped": true,
@@ -214,10 +221,7 @@ fn assert_workspace_parity(sway: &Workspace, hypr: &Workspace, scenario: &str) {
         sway.is_special, hypr.is_special,
         "{scenario}: is_special mismatch"
     );
-    assert_eq!(
-        sway.urgent, hypr.urgent,
-        "{scenario}: urgent mismatch"
-    );
+    assert_eq!(sway.urgent, hypr.urgent, "{scenario}: urgent mismatch");
     // Name parity: sway uses the workspace name as-is; Hyprland may prefix
     // special workspaces with "special:". We only compare for non-special.
     if !sway.is_special {
@@ -241,7 +245,10 @@ fn assert_output_parity(sway: &Output, hypr: &Output, scenario: &str) {
 fn assert_window_parity(sway: &Window, hypr: &Window, scenario: &str) {
     assert_eq!(sway.title, hypr.title, "{scenario}: title mismatch");
     assert_eq!(sway.app_id, hypr.app_id, "{scenario}: app_id mismatch");
-    assert_eq!(sway.floating, hypr.floating, "{scenario}: floating mismatch");
+    assert_eq!(
+        sway.floating, hypr.floating,
+        "{scenario}: floating mismatch"
+    );
     assert_eq!(
         sway.fullscreen, hypr.fullscreen,
         "{scenario}: fullscreen mismatch"
@@ -270,10 +277,8 @@ fn parity_special_workspace() {
 
 #[test]
 fn parity_output_resolution_and_refresh() {
-    let sway_out =
-        sc::output_from_sway(&sway_fixtures::output("eDP-1", 1920, 1080, 60_000));
-    let hypr_out =
-        hc::output_from_hyprland(&hyprland_fixtures::monitor("eDP-1", 1920, 1080, 60.0));
+    let sway_out = sc::output_from_sway(&sway_fixtures::output("eDP-1", 1920, 1080, 60_000));
+    let hypr_out = hc::output_from_hyprland(&hyprland_fixtures::monitor("eDP-1", 1920, 1080, 60.0));
     assert_output_parity(&sway_out, &hypr_out, "1080p 60Hz");
 }
 
@@ -281,16 +286,18 @@ fn parity_output_resolution_and_refresh() {
 fn parity_output_high_refresh() {
     // 144 Hz: sway reports 144000 mHz; hyprland reports 144.0 Hz.
     let sway_out = sc::output_from_sway(&sway_fixtures::output("DP-1", 2560, 1440, 144_000));
-    let hypr_out =
-        hc::output_from_hyprland(&hyprland_fixtures::monitor("DP-1", 2560, 1440, 144.0));
+    let hypr_out = hc::output_from_hyprland(&hyprland_fixtures::monitor("DP-1", 2560, 1440, 144.0));
     assert_output_parity(&sway_out, &hypr_out, "1440p 144Hz");
     assert!((sway_out.refresh_hz - 144.0).abs() < 0.1);
 }
 
 #[test]
 fn parity_window_basic() {
-    let sway_win = sc::window_from_node(&sway_fixtures::window_node(42, "Firefox", "firefox", true));
-    let hypr_win = hc::window_from_hyprland(&hyprland_fixtures::client(42, "Firefox", "firefox", 1, true));
+    let sway_win =
+        sc::window_from_node(&sway_fixtures::window_node(42, "Firefox", "firefox", true));
+    let hypr_win = hc::window_from_hyprland(&hyprland_fixtures::client(
+        42, "Firefox", "firefox", 1, true,
+    ));
     assert_window_parity(&sway_win, &hypr_win, "basic window");
 }
 
@@ -326,7 +333,10 @@ fn parity_floating_window() {
     let hypr_win = hc::window_from_hyprland(&hypr_raw);
 
     assert!(sway_win.floating, "sway floating_con should be floating");
-    assert!(hypr_win.floating, "hyprland floating client should be floating");
+    assert!(
+        hypr_win.floating,
+        "hyprland floating client should be floating"
+    );
     assert_window_parity(&sway_win, &hypr_win, "floating window");
 }
 
@@ -342,11 +352,7 @@ fn parity_multiple_workspaces_count() {
         })
         .collect();
 
-    assert_eq!(
-        sway_wss.len(),
-        hypr_wss.len(),
-        "workspace count must match"
-    );
+    assert_eq!(sway_wss.len(), hypr_wss.len(), "workspace count must match");
     for (s, h) in sway_wss.iter().zip(hypr_wss.iter()) {
         assert_workspace_parity(s, h, "multi-workspace element");
     }
@@ -355,12 +361,14 @@ fn parity_multiple_workspaces_count() {
 #[test]
 fn parity_focused_workspace_flag() {
     let sway_ws = sc::workspace_from_sway(&sway_fixtures::workspace(2, "2", true));
-    let mut hypr_ws =
-        hc::workspace_from_hyprland(&hyprland_fixtures::workspace(2, "2", "eDP-1"));
+    let mut hypr_ws = hc::workspace_from_hyprland(&hyprland_fixtures::workspace(2, "2", "eDP-1"));
     hypr_ws.focused = true; // annotated during snapshot building
 
     assert!(sway_ws.focused, "sway: focused workspace should be marked");
-    assert!(hypr_ws.focused, "hyprland: focused workspace should be marked");
+    assert!(
+        hypr_ws.focused,
+        "hyprland: focused workspace should be marked"
+    );
 }
 
 #[test]

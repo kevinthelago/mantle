@@ -58,7 +58,7 @@ pub fn window_from_hyprland(c: &HyprClient) -> Window {
         title: c.title.clone(),
         app_id: Some(c.class.clone()).filter(|s| !s.is_empty()),
         workspace_id: Some(c.workspace.id),
-        output: None, // filled in by snapshot (map monitor id → name)
+        output: None,   // filled in by snapshot (map monitor id → name)
         focused: false, // filled in by snapshot (compare address with active client)
         floating: c.floating,
         fullscreen: c.fullscreen != hyprland::data::FullscreenMode::None,
@@ -80,10 +80,21 @@ pub enum HyprRawEvent {
     WorkspaceChanged(String),
     WorkspaceAdded(String),
     WorkspaceDeleted(String),
-    ActiveWindowChanged { class: String, title: String },
-    WindowOpened { address: String, workspace_name: String, class: String, title: String },
+    ActiveWindowChanged {
+        class: String,
+        title: String,
+    },
+    WindowOpened {
+        address: String,
+        workspace_name: String,
+        class: String,
+        title: String,
+    },
     WindowClosed(String),
-    WindowMoved { address: String, workspace_name: String },
+    WindowMoved {
+        address: String,
+        workspace_name: String,
+    },
     WindowTitleChanged(String),
     MonitorAdded(String),
     MonitorRemoved(String),
