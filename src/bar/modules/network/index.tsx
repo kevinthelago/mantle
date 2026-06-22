@@ -1,16 +1,11 @@
-import React from 'react';
+import React from 'react'
 
-import {
-  isConnected,
-  networkIcon,
-  signalBars,
-  useNetwork,
-} from './useNetwork';
-import styles from './Network.module.css';
+import { isConnected, networkIcon, signalBars, useNetwork } from './useNetwork'
+import styles from './Network.module.css'
 
 function SignalBars({ strength }: { strength: number | null }): React.ReactElement {
-  const count = signalBars(strength);
-  const heights = [4, 7, 10, 13];
+  const count = signalBars(strength)
+  const heights = [4, 7, 10, 13]
   return (
     <span className={styles.bars} aria-hidden>
       {heights.map((h, i) => (
@@ -22,26 +17,26 @@ function SignalBars({ strength }: { strength: number | null }): React.ReactEleme
         />
       ))}
     </span>
-  );
+  )
 }
 
 export function NetworkModule(): React.ReactElement | null {
-  const snap = useNetwork();
+  const snap = useNetwork()
 
-  if (!snap.available) return null;
+  if (!snap.available) return null
 
-  const connected = isConnected(snap.state);
-  const icon = networkIcon(snap);
+  const connected = isConnected(snap.state)
+  const icon = networkIcon(snap)
   const label =
     snap.connectionType === 'wifi'
-      ? snap.ssid ?? '…'
+      ? (snap.ssid ?? '…')
       : snap.connectionType === 'wired'
-      ? snap.interface ?? 'Wired'
-      : snap.connectionType === 'vpn'
-      ? 'VPN'
-      : connected
-      ? 'Connected'
-      : 'Disconnected';
+        ? (snap.interface ?? 'Wired')
+        : snap.connectionType === 'vpn'
+          ? 'VPN'
+          : connected
+            ? 'Connected'
+            : 'Disconnected'
 
   const tooltip = [
     `State: ${snap.state}`,
@@ -50,21 +45,17 @@ export function NetworkModule(): React.ReactElement | null {
     snap.signalStrength !== null && `Signal: ${snap.signalStrength}%`,
   ]
     .filter(Boolean)
-    .join('\n');
+    .join('\n')
 
   return (
-    <div
-      className={styles.module}
-      data-connected={String(connected)}
-      title={tooltip}
-    >
-      <span className={styles.icon} aria-hidden>{icon}</span>
-      {snap.connectionType === 'wifi' && connected && (
-        <SignalBars strength={snap.signalStrength} />
-      )}
+    <div className={styles.module} data-connected={String(connected)} title={tooltip}>
+      <span className={styles.icon} aria-hidden>
+        {icon}
+      </span>
+      {snap.connectionType === 'wifi' && connected && <SignalBars strength={snap.signalStrength} />}
       <span className={styles.label}>{label}</span>
     </div>
-  );
+  )
 }
 
 export const barModule = {
@@ -72,4 +63,4 @@ export const barModule = {
   region: 'right' as const,
   order: 20,
   component: NetworkModule,
-};
+}

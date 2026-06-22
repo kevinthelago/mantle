@@ -1,23 +1,19 @@
-import React from 'react';
+import React from 'react'
 
-import {
-  batteryIcon,
-  formatTimeRemaining,
-  useBattery,
-} from './useBattery';
-import styles from './Battery.module.css';
+import { batteryIcon, formatTimeRemaining, useBattery } from './useBattery'
+import styles from './Battery.module.css'
 
 export function BatteryModule(): React.ReactElement | null {
-  const snap = useBattery();
+  const snap = useBattery()
 
-  if (!snap.available || !snap.present) return null;
+  if (!snap.available || !snap.present) return null
 
-  const isLow = snap.percentage < 20 && snap.state === 'discharging';
-  const icon = batteryIcon(snap.state, snap.percentage);
+  const isLow = snap.percentage < 20 && snap.state === 'discharging'
+  const icon = batteryIcon(snap.state, snap.percentage)
   const timeStr =
     snap.state === 'charging'
       ? formatTimeRemaining(snap.timeToFull)
-      : formatTimeRemaining(snap.timeToEmpty);
+      : formatTimeRemaining(snap.timeToEmpty)
 
   return (
     <div
@@ -33,7 +29,7 @@ export function BatteryModule(): React.ReactElement | null {
       <span className={styles.percentage}>{Math.round(snap.percentage)}%</span>
       {timeStr && <span className={styles.time}>{timeStr}</span>}
     </div>
-  );
+  )
 }
 
 /** Bar-shell module registration contract. */
@@ -42,4 +38,4 @@ export const barModule = {
   region: 'right' as const,
   order: 30,
   component: BatteryModule,
-};
+}

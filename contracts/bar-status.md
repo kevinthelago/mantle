@@ -55,14 +55,14 @@ log         = "0.4"
 
 ## Events emitted (frontend listeners)
 
-| Event              | Payload type        | Trigger                              |
-|--------------------|---------------------|--------------------------------------|
-| `battery_update`   | `BatterySnapshot`   | UPower property change               |
-| `network_update`   | `NetworkSnapshot`   | NM state/primary-connection change   |
-| `audio_update`     | `AudioSnapshot`     | PipeWire node props / set command    |
-| `brightness_update`| `BrightnessSnapshot`| sysfs poll (500 ms)                  |
-| `tray_update`      | `TraySnapshot`      | SNI item add/remove/property change  |
-| `tray_item_removed`| `string` (key)      | SNI item service disappears          |
+| Event               | Payload type         | Trigger                             |
+| ------------------- | -------------------- | ----------------------------------- |
+| `battery_update`    | `BatterySnapshot`    | UPower property change              |
+| `network_update`    | `NetworkSnapshot`    | NM state/primary-connection change  |
+| `audio_update`      | `AudioSnapshot`      | PipeWire node props / set command   |
+| `brightness_update` | `BrightnessSnapshot` | sysfs poll (500 ms)                 |
+| `tray_update`       | `TraySnapshot`       | SNI item add/remove/property change |
+| `tray_item_removed` | `string` (key)       | SNI item service disappears         |
 
 ## Bar-shell module registrations
 
@@ -75,13 +75,13 @@ Each module exports a `barModule` object:
 Import and register in `src/bar/registry.ts`:
 
 ```typescript
-import { barModule as battery }    from './modules/battery';
-import { barModule as network }    from './modules/network';
-import { barModule as audio }      from './modules/audio';
-import { barModule as brightness } from './modules/brightness';
-import { barModule as tray }       from './modules/tray';
+import { barModule as battery } from './modules/battery'
+import { barModule as network } from './modules/network'
+import { barModule as audio } from './modules/audio'
+import { barModule as brightness } from './modules/brightness'
+import { barModule as tray } from './modules/tray'
 
-[battery, network, audio, brightness, tray].forEach(registerModule);
+;[battery, network, audio, brightness, tray].forEach(registerModule)
 ```
 
 Default ordering (right region, left-to-right): tray(1), audio(10), brightness(15), network(20), battery(30).

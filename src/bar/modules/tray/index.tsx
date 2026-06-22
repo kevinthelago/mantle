@@ -1,13 +1,13 @@
-import React from 'react';
+import React from 'react'
 
-import { useTray } from './useTray';
-import { TrayItemView } from './TrayItem';
-import styles from './Tray.module.css';
+import { useTray } from './useTray'
+import { TrayItemView } from './TrayItem'
+import styles from './Tray.module.css'
 
 export function TrayModule(): React.ReactElement | null {
-  const { items, activate, sendMenuEvent, refreshMenu } = useTray();
+  const { items, activate, sendMenuEvent, refreshMenu } = useTray()
 
-  if (items.length === 0) return null;
+  if (items.length === 0) return null
 
   return (
     <div className={styles.tray} role="toolbar" aria-label="System tray">
@@ -21,7 +21,7 @@ export function TrayModule(): React.ReactElement | null {
         />
       ))}
     </div>
-  );
+  )
 }
 
 export const barModule = {
@@ -29,4 +29,4 @@ export const barModule = {
   region: 'right' as const,
   order: 1,
   component: TrayModule,
-};
+}

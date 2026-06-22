@@ -1,24 +1,24 @@
-import React, { useCallback } from 'react';
+import React, { useCallback } from 'react'
 
-import { brightnessIcon, useBrightness } from './useBrightness';
-import styles from './Brightness.module.css';
+import { brightnessIcon, useBrightness } from './useBrightness'
+import styles from './Brightness.module.css'
 
 export function BrightnessModule(): React.ReactElement | null {
-  const { snap, setBrightness } = useBrightness();
+  const { snap, setBrightness } = useBrightness()
 
-  if (!snap.available) return null;
+  if (!snap.available) return null
 
-  const pct = Math.round(snap.percentage * 100);
-  const icon = brightnessIcon(snap.percentage);
+  const pct = Math.round(snap.percentage * 100)
+  const icon = brightnessIcon(snap.percentage)
 
   const handleWheel = useCallback(
     (e: React.WheelEvent) => {
-      e.preventDefault();
-      const delta = -e.deltaY / 1000;
-      setBrightness(snap.percentage + delta).catch(console.error);
+      e.preventDefault()
+      const delta = -e.deltaY / 1000
+      setBrightness(snap.percentage + delta).catch(console.error)
     },
     [snap.percentage, setBrightness],
-  );
+  )
 
   return (
     <div
@@ -32,14 +32,16 @@ export function BrightnessModule(): React.ReactElement | null {
       aria-valuemax={100}
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === 'ArrowUp') setBrightness(snap.percentage + 0.05).catch(console.error);
-        if (e.key === 'ArrowDown') setBrightness(snap.percentage - 0.05).catch(console.error);
+        if (e.key === 'ArrowUp') setBrightness(snap.percentage + 0.05).catch(console.error)
+        if (e.key === 'ArrowDown') setBrightness(snap.percentage - 0.05).catch(console.error)
       }}
     >
-      <span className={styles.icon} aria-hidden>{icon}</span>
+      <span className={styles.icon} aria-hidden>
+        {icon}
+      </span>
       <span className={styles.label}>{pct}%</span>
     </div>
-  );
+  )
 }
 
 export const barModule = {
@@ -47,4 +49,4 @@ export const barModule = {
   region: 'right' as const,
   order: 15,
   component: BrightnessModule,
-};
+}
