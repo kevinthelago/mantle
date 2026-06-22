@@ -1,5 +1,4 @@
-use crate::layer_shell::manager::{KeyboardHint, LayerHint, SurfaceConfig};
-use crate::layer_shell::LayerShellManager;
+use crate::layer_shell::manager::{ExclusiveZone, KeyboardMode, Layer, SurfaceConfig};
 use crate::registry::MantlePlugin;
 
 use super::LauncherState;
@@ -36,13 +35,12 @@ pub fn init() -> tauri::plugin::TauriPlugin<tauri::Wry> {
 pub fn launcher_surface_config() -> SurfaceConfig {
     SurfaceConfig {
         namespace: "mantle-launcher".to_string(),
-        layer: LayerHint::Overlay,
+        layer: Layer::Overlay,
         // No edge anchoring — the window floats centred at its declared size.
-        anchors: vec![],
-        exclusive_zone: 0,
-        margins: Default::default(),
-        keyboard_mode: KeyboardHint::Exclusive,
-        output: None,
+        anchors: [false, false, false, false],
+        exclusive_zone: ExclusiveZone::None,
+        margins: (0, 0, 0, 0),
+        keyboard_mode: KeyboardMode::Exclusive,
     }
 }
 
@@ -50,5 +48,16 @@ pub fn launcher_surface_config() -> SurfaceConfig {
 ///
 /// Called from `lib.rs` setup on Linux after all plugins are wired.
 pub fn setup_surface(win: &tauri::WebviewWindow) -> Result<(), String> {
-    LayerShellManager::new().apply(win, &launcher_surface_config())
+    #[cfg(target_os = "linux")]
+    {
+        let gtk_win = win.gtk_window().map_err(|e| e.to_string())?;
+        let config = launcher_surface_config();
+        crate::layer_shell::LayerShellManager::apply_to_window(&gtk_win, &config, None);
+        win.show().map_err(|e| e.to_string())?;
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        let _ = win;
+    }
+    Ok(())
 }

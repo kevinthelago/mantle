@@ -88,9 +88,10 @@ pub fn run() {
                     .get_webview_window("bar")
                     .expect("bar window defined in tauri.conf.json");
 
-                layer_shell::LayerShellManager::new()
-                    .apply(&win, &layer_shell::SurfaceConfig::default_bar())
-                    .expect("Failed to apply layer shell to bar window");
+                let gtk_win = win.gtk_window().expect("failed to get GTK window for bar");
+                let bar_config = layer_shell::SurfaceConfig::top_bar(36, "mantle-bar");
+                layer_shell::LayerShellManager::apply_to_window(&gtk_win, &bar_config, None);
+                win.show().expect("failed to show bar window");
 
                 if let Some(launcher_win) = app.get_webview_window("launcher") {
                     launcher::setup_surface(&launcher_win)
