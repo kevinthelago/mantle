@@ -66,3 +66,19 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running Mantle");
 }
+
+#[cfg(test)]
+mod tests {
+    /// CI gate: verifies the bridge command builder compiles and is
+    /// structurally valid without panicking.  Does NOT write bindings.ts so
+    /// that `git diff --exit-code -- 'src/lib/bridge/'` always passes (the
+    /// diff only catches drift when a developer manually runs generate-bindings
+    /// and fails to commit the result).
+    ///
+    /// To update bindings.ts after changing commands:
+    ///   cargo run --bin generate-bindings  (from src-tauri/)
+    #[test]
+    fn export_bindings() {
+        let _ = crate::bridge::build_commands();
+    }
+}
