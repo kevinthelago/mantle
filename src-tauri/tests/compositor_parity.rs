@@ -1,3 +1,5 @@
+#![cfg(unix)]
+
 /// Backend parity tests.
 ///
 /// Each test in this matrix converts equivalent raw IPC responses from sway
