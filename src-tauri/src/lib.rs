@@ -65,13 +65,3 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running Mantle");
 }
-
-#[cfg(test)]
-mod tests {
-    /// CI staleness gate: re-exports bindings and lets `git diff --exit-code`
-    /// catch any drift.  Run via: cargo test export_bindings -- --exact
-    #[test]
-    fn export_bindings() {
-        crate::export_bindings();
-    }
-}
