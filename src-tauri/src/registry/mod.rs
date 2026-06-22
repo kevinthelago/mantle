@@ -1,3 +1,3 @@
 mod service;
 
-pub use service::{MantlePlugin, setup};
+pub use service::{setup, MantlePlugin};
