@@ -70,8 +70,7 @@ impl TrayService {
             }
         };
 
-        let items: Arc<Mutex<HashMap<String, TrayItem>>> =
-            Arc::new(Mutex::new(HashMap::new()));
+        let items: Arc<Mutex<HashMap<String, TrayItem>>> = Arc::new(Mutex::new(HashMap::new()));
         let svc = Arc::new(Self {
             items: items.clone(),
             conn: conn.clone(),
@@ -101,8 +100,7 @@ impl TrayService {
                             }
                         }
 
-                        let item =
-                            read_item(&conn2, &key, &service, &obj_path).await;
+                        let item = read_item(&conn2, &key, &service, &obj_path).await;
                         {
                             let mut lock = items2.lock().await;
                             lock.insert(key.clone(), item);
@@ -154,10 +152,7 @@ impl TrayService {
     }
 }
 
-async fn emit_snapshot(
-    items: &Arc<Mutex<HashMap<String, TrayItem>>>,
-    app: &AppHandle,
-) {
+async fn emit_snapshot(items: &Arc<Mutex<HashMap<String, TrayItem>>>, app: &AppHandle) {
     let snap = TraySnapshot {
         items: items.lock().await.values().cloned().collect(),
     };
@@ -167,9 +162,7 @@ async fn emit_snapshot(
 // ── Tauri commands ────────────────────────────────────────────────────────────
 
 #[tauri::command]
-pub async fn get_tray_items(
-    state: State<'_, Arc<TrayService>>,
-) -> Result<TraySnapshot, String> {
+pub async fn get_tray_items(state: State<'_, Arc<TrayService>>) -> Result<TraySnapshot, String> {
     Ok(state.snapshot().await)
 }
 
@@ -185,14 +178,9 @@ pub async fn tray_item_activate(
     let item = lock.get(&key).ok_or_else(|| "item not found".to_owned())?;
 
     let (service, obj_path) = split_key(&key);
-    let proxy = zbus::Proxy::new(
-        &state.conn,
-        service,
-        obj_path,
-        "org.kde.StatusNotifierItem",
-    )
-    .await
-    .map_err(|e| e.to_string())?;
+    let proxy = zbus::Proxy::new(&state.conn, service, obj_path, "org.kde.StatusNotifierItem")
+        .await
+        .map_err(|e| e.to_string())?;
     drop(lock);
 
     proxy
@@ -217,8 +205,7 @@ pub async fn tray_menu_event(
             .and_then(|i| i.menu_path.clone())
             .ok_or_else(|| "item or menu not found".to_owned())?
     };
-    crate::tray::dbusmenu::send_menu_event(&state.conn, &service, &menu_path, item_id, &event)
-        .await
+    crate::tray::dbusmenu::send_menu_event(&state.conn, &service, &menu_path, item_id, &event).await
 }
 
 /// Re-fetch the menu tree for an item (call before opening a context menu).
@@ -230,8 +217,7 @@ pub async fn tray_refresh_menu(
     let (service, _) = split_key(&key);
     let menu_path = {
         let lock = state.items.lock().await;
-        lock.get(&key)
-            .and_then(|i| i.menu_path.clone())
+        lock.get(&key).and_then(|i| i.menu_path.clone())
     };
     let Some(mp) = menu_path else {
         return Ok(None);

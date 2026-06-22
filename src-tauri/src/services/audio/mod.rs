@@ -136,32 +136,52 @@ impl AudioService {
     }
 
     pub fn set_volume(&self, vol: f32) -> Result<(), String> {
-        self.cmd_tx.send(PwCmd::SetVolume(vol.clamp(0.0, 1.0))).map_err(|e| e.to_string())
+        self.cmd_tx
+            .send(PwCmd::SetVolume(vol.clamp(0.0, 1.0)))
+            .map_err(|e| e.to_string())
     }
 
     pub fn set_mute(&self, muted: bool) -> Result<(), String> {
-        self.cmd_tx.send(PwCmd::SetMute(muted)).map_err(|e| e.to_string())
+        self.cmd_tx
+            .send(PwCmd::SetMute(muted))
+            .map_err(|e| e.to_string())
     }
 }
 
 // ── PipeWire thread ───────────────────────────────────────────────────────────
 
-fn pw_thread(app: AppHandle, snapshot: Arc<Mutex<AudioSnapshot>>, cmd_rx: pw::channel::Receiver<PwCmd>) {
+fn pw_thread(
+    app: AppHandle,
+    snapshot: Arc<Mutex<AudioSnapshot>>,
+    cmd_rx: pw::channel::Receiver<PwCmd>,
+) {
     let mainloop = match pw::MainLoop::new(None) {
         Ok(m) => m,
-        Err(e) => { log::warn!("PipeWire MainLoop: {e}"); return; }
+        Err(e) => {
+            log::warn!("PipeWire MainLoop: {e}");
+            return;
+        }
     };
     let context = match pw::Context::new(&mainloop) {
         Ok(c) => c,
-        Err(e) => { log::warn!("PipeWire Context: {e}"); return; }
+        Err(e) => {
+            log::warn!("PipeWire Context: {e}");
+            return;
+        }
     };
     let core = match context.connect(None) {
         Ok(c) => c,
-        Err(e) => { log::warn!("PipeWire connect: {e}"); return; }
+        Err(e) => {
+            log::warn!("PipeWire connect: {e}");
+            return;
+        }
     };
     let registry = Rc::new(match core.get_registry() {
         Ok(r) => r,
-        Err(e) => { log::warn!("PipeWire Registry: {e}"); return; }
+        Err(e) => {
+            log::warn!("PipeWire Registry: {e}");
+            return;
+        }
     });
 
     // Thread-local mutable state — all callbacks run on this single thread.
@@ -180,12 +200,20 @@ fn pw_thread(app: AppHandle, snapshot: Arc<Mutex<AudioSnapshot>>, cmd_rx: pw::ch
     let cmd_app = app.clone();
     let cmd_dsn = default_sink_name.clone();
     let _cmd_attached = cmd_rx.attach(mainloop.loop_(), move |cmd| {
-        let Some(id) = *cmd_def_id.borrow() else { return };
+        let Some(id) = *cmd_def_id.borrow() else {
+            return;
+        };
         let nodes_ref = cmd_nodes.borrow();
-        let Some(node_state) = nodes_ref.get(&id) else { return };
+        let Some(node_state) = nodes_ref.get(&id) else {
+            return;
+        };
         match cmd {
-            PwCmd::SetVolume(v) => { *cmd_vol.borrow_mut() = v; }
-            PwCmd::SetMute(m)   => { *cmd_mut.borrow_mut() = m; }
+            PwCmd::SetVolume(v) => {
+                *cmd_vol.borrow_mut() = v;
+            }
+            PwCmd::SetMute(m) => {
+                *cmd_mut.borrow_mut() = m;
+            }
         }
         apply_props(&node_state.proxy, *cmd_vol.borrow(), *cmd_mut.borrow());
         publish(&cmd_snap, &cmd_app, &cmd_vol, &cmd_mut, &cmd_dsn);
@@ -204,7 +232,9 @@ fn pw_thread(app: AppHandle, snapshot: Arc<Mutex<AudioSnapshot>>, cmd_rx: pw::ch
     let _registry_listener = registry
         .add_listener_local()
         .global(move |global| {
-            on_global(global, &reg_ref, &dsn, &dnid, &nds, &vol, &mut_, &snap, &app2);
+            on_global(
+                global, &reg_ref, &dsn, &dnid, &nds, &vol, &mut_, &snap, &app2,
+            );
         })
         .global_remove({
             let nds2 = nodes.clone();
@@ -249,14 +279,19 @@ fn on_global(
             let _listener = meta
                 .add_listener_local()
                 .property(move |_subject, key, _type, value| {
-                    if key != Some("default.audio.sink") { return; }
+                    if key != Some("default.audio.sink") {
+                        return;
+                    }
                     let name = value
                         .and_then(|v| serde_json::from_str::<serde_json::Value>(v).ok())
                         .and_then(|j| j["name"].as_str().map(ToOwned::to_owned));
                     *dsn.borrow_mut() = name.clone();
                     // Try to find matching node.
                     let new_id = nds.borrow().iter().find_map(|(id, n)| {
-                        name.as_deref().map(|nm| nm == n.name).unwrap_or(false).then_some(*id)
+                        name.as_deref()
+                            .map(|nm| nm == n.name)
+                            .unwrap_or(false)
+                            .then_some(*id)
                     });
                     *dnid.borrow_mut() = new_id;
                     if new_id.is_some() {
@@ -270,8 +305,13 @@ fn on_global(
         }
 
         ObjectType::Node => {
-            let props = match global.props { Some(p) => p, None => return };
-            if props.get("media.class") != Some("Audio/Sink") { return; }
+            let props = match global.props {
+                Some(p) => p,
+                None => return,
+            };
+            if props.get("media.class") != Some("Audio/Sink") {
+                return;
+            }
             let node_name = props.get("node.name").unwrap_or("").to_owned();
             let id = global.id;
 
@@ -291,11 +331,12 @@ fn on_global(
             let listener = node
                 .add_listener_local()
                 .param(move |_seq, param_type, _idx, _next, pod| {
-                    if param_type != ParamType::Props { return; }
+                    if param_type != ParamType::Props {
+                        return;
+                    }
                     let Some(pod) = pod else { return };
                     parse_props(pod, &vol, &mut_);
-                    let is_default =
-                        dsn.borrow().as_deref().map(|n| n == nn).unwrap_or(false)
+                    let is_default = dsn.borrow().as_deref().map(|n| n == nn).unwrap_or(false)
                         || dnid.borrow().as_ref() == Some(&id);
                     if is_default {
                         *dnid.borrow_mut() = Some(id);
@@ -311,11 +352,14 @@ fn on_global(
                 *default_node_id.borrow_mut() = Some(id);
             }
 
-            nodes.borrow_mut().insert(id, TrackedNode {
-                name: node_name,
-                proxy: node,
-                _listener: listener,
-            });
+            nodes.borrow_mut().insert(
+                id,
+                TrackedNode {
+                    name: node_name,
+                    proxy: node,
+                    _listener: listener,
+                },
+            );
         }
 
         _ => {}
@@ -328,7 +372,8 @@ fn parse_props(pod: &Pod, volume: &Rc<RefCell<f32>>, mute: &Rc<RefCell<bool>>) {
     use pipewire::spa::pod::deserialize::PodDeserializer;
     // Walk the props object looking for channelVolumes and mute.
     // The pod is an SPA_TYPE_Object with props.
-    if let Ok((_, Value::Object(obj))) = PodDeserializer::deserialize_from::<Value>(pod.as_bytes()) {
+    if let Ok((_, Value::Object(obj))) = PodDeserializer::deserialize_from::<Value>(pod.as_bytes())
+    {
         for prop in &obj.properties {
             match prop.key {
                 k if k == unsafe { SPA_PROP_channelVolumes } => {

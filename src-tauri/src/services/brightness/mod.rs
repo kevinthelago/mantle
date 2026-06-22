@@ -77,11 +77,7 @@ fn find_backlight_device() -> Option<(PathBuf, String)> {
 }
 
 fn read_sysfs_u32(path: &Path) -> Option<u32> {
-    std::fs::read_to_string(path)
-        .ok()?
-        .trim()
-        .parse()
-        .ok()
+    std::fs::read_to_string(path).ok()?.trim().parse().ok()
 }
 
 fn read_brightness(dev_path: &Path) -> Option<BrightnessSnapshot> {

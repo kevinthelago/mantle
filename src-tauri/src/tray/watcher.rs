@@ -23,7 +23,7 @@ use crate::tray::item::parse_sni_key;
 
 #[derive(Debug, Clone)]
 pub enum WatcherEvent {
-    ItemAdded(String, String),   // (service, object_path)
+    ItemAdded(String, String), // (service, object_path)
     ItemRemoved(String, String),
 }
 
@@ -147,7 +147,10 @@ impl WatcherImpl {
                     for key in removed {
                         lock.remove(&key);
                         let (svc, path) = parse_sni_key(&key, "");
-                        event_tx.send(WatcherEvent::ItemRemoved(svc, path)).await.ok();
+                        event_tx
+                            .send(WatcherEvent::ItemRemoved(svc, path))
+                            .await
+                            .ok();
                     }
                 }
             }
@@ -159,9 +162,7 @@ impl WatcherImpl {
 
 /// Try to own `org.kde.StatusNotifierWatcher`; if taken, co-host instead.
 /// Returns a channel that yields `WatcherEvent`s.
-pub async fn start_watcher(
-    conn: Connection,
-) -> Result<mpsc::Receiver<WatcherEvent>, zbus::Error> {
+pub async fn start_watcher(conn: Connection) -> Result<mpsc::Receiver<WatcherEvent>, zbus::Error> {
     let (tx, rx) = mpsc::channel(64);
 
     let reply = conn
@@ -203,10 +204,15 @@ async fn run_as_primary_watcher(
         .await?;
 
     // Register ourselves as a host too.
-    let own_name = conn.unique_name().map(|n| n.as_str().to_owned()).unwrap_or_default();
+    let own_name = conn
+        .unique_name()
+        .map(|n| n.as_str().to_owned())
+        .unwrap_or_default();
     let ctx = SignalContext::new(&conn, "/StatusNotifierWatcher")?;
     hosts.lock().await.push(own_name);
-    WatcherImpl::status_notifier_host_registered(&ctx).await.ok();
+    WatcherImpl::status_notifier_host_registered(&ctx)
+        .await
+        .ok();
 
     // Watch for disappearing services.
     watcher.watch_name_changes().await;
@@ -222,7 +228,10 @@ async fn run_as_co_host(
     let proxy = StatusNotifierWatcherProxy::new(&conn).await?;
 
     // Register as a host.
-    let own_name = conn.unique_name().map(|n| n.as_str().to_owned()).unwrap_or_default();
+    let own_name = conn
+        .unique_name()
+        .map(|n| n.as_str().to_owned())
+        .unwrap_or_default();
     proxy.register_status_notifier_host(&own_name).await.ok();
 
     // Seed from existing items.

@@ -118,7 +118,9 @@ pub struct PowerSupplyService {
 impl PowerSupplyService {
     pub async fn init(app: AppHandle) -> Arc<Self> {
         let snapshot = Arc::new(Mutex::new(BatterySnapshot::unavailable()));
-        let svc = Arc::new(Self { snapshot: snapshot.clone() });
+        let svc = Arc::new(Self {
+            snapshot: snapshot.clone(),
+        });
         let app2 = app.clone();
         tokio::spawn(async move {
             if let Err(e) = run_battery_loop(app2, snapshot).await {
@@ -149,9 +151,7 @@ async fn find_battery_path(
     Ok(None)
 }
 
-async fn read_snapshot(
-    dev: &UPowerDeviceProxy<'_>,
-) -> zbus::Result<BatterySnapshot> {
+async fn read_snapshot(dev: &UPowerDeviceProxy<'_>) -> zbus::Result<BatterySnapshot> {
     Ok(BatterySnapshot {
         available: true,
         present: dev.is_present().await?,

@@ -57,19 +57,28 @@ fn lookup_in_dir(dir: &Path, name: &str, _size: u32) -> Option<PathBuf> {
 fn lookup_freedesktop(name: &str, size_hint: u32) -> Option<PathBuf> {
     let search_paths = icon_search_paths();
     let themes = ["hicolor", "Adwaita", "gnome"];
-    let preferred_sizes: &[&str] = &["scalable", "symbolic", "48x48", "32x32", "24x24", "22x22", "16x16"];
+    let preferred_sizes: &[&str] = &[
+        "scalable", "symbolic", "48x48", "32x32", "24x24", "22x22", "16x16",
+    ];
 
     for base in &search_paths {
         for theme in themes {
             let theme_dir = base.join(theme);
             for size_dir in preferred_sizes {
-                let size_u = size_dir.split('x').next().and_then(|s| s.parse::<u32>().ok()).unwrap_or(0);
+                let size_u = size_dir
+                    .split('x')
+                    .next()
+                    .and_then(|s| s.parse::<u32>().ok())
+                    .unwrap_or(0);
                 if size_u > 0 && size_u < size_hint / 2 {
                     continue;
                 }
                 for cat in &["apps", "devices", "status", "actions", "places"] {
                     for ext in &["svg", "png", "xpm"] {
-                        let p = theme_dir.join(size_dir).join(cat).join(format!("{name}.{ext}"));
+                        let p = theme_dir
+                            .join(size_dir)
+                            .join(cat)
+                            .join(format!("{name}.{ext}"));
                         if p.exists() {
                             return Some(p);
                         }
@@ -79,7 +88,11 @@ fn lookup_freedesktop(name: &str, size_hint: u32) -> Option<PathBuf> {
         }
         // Also try pixmaps.
         for ext in &["png", "svg", "xpm"] {
-            let p = base.parent().unwrap_or(base).join("pixmaps").join(format!("{name}.{ext}"));
+            let p = base
+                .parent()
+                .unwrap_or(base)
+                .join("pixmaps")
+                .join(format!("{name}.{ext}"));
             if p.exists() {
                 return Some(p);
             }

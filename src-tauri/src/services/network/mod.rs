@@ -195,7 +195,9 @@ pub struct NetworkService {
 impl NetworkService {
     pub async fn init(app: AppHandle) -> Arc<Self> {
         let snapshot = Arc::new(Mutex::new(NetworkSnapshot::unavailable()));
-        let svc = Arc::new(Self { snapshot: snapshot.clone() });
+        let svc = Arc::new(Self {
+            snapshot: snapshot.clone(),
+        });
         let app2 = app.clone();
         tokio::spawn(async move {
             if let Err(e) = run_network_loop(app2, snapshot).await {
@@ -227,7 +229,9 @@ async fn build_snapshot(nm: &NetworkManagerProxy<'_>, conn: &Connection) -> Netw
     };
 
     // Delegate to a fallible inner helper so we can use `?` freely.
-    enrich_snapshot(base, nm, conn).await.unwrap_or_else(|snap| snap)
+    enrich_snapshot(base, nm, conn)
+        .await
+        .unwrap_or_else(|snap| snap)
 }
 
 /// Returns `Ok(enriched)` or `Err(partial)` — either way the caller uses the value.
@@ -281,7 +285,9 @@ async fn enrich_snapshot(
                                     .first()
                                     .and_then(|m| m.get("address"))
                                     .and_then(|v| match &**v {
-                                        zbus::zvariant::Value::Str(s) => Some(s.as_str().to_owned()),
+                                        zbus::zvariant::Value::Str(s) => {
+                                            Some(s.as_str().to_owned())
+                                        }
                                         _ => None,
                                     });
                             }

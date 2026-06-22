@@ -89,7 +89,11 @@ pub fn parse_sni_key(raw: &str, sender: &str) -> (String, String) {
         let svc = &raw[..slash];
         let path = &raw[slash..];
         (
-            if svc.is_empty() { sender.to_owned() } else { svc.to_owned() },
+            if svc.is_empty() {
+                sender.to_owned()
+            } else {
+                svc.to_owned()
+            },
             path.to_owned(),
         )
     } else if raw.is_empty() {
@@ -103,12 +107,7 @@ pub fn parse_sni_key(raw: &str, sender: &str) -> (String, String) {
 
 /// Build a full `TrayItem` snapshot by reading all SNI properties.
 /// Any property failure is silently defaulted (graceful degrade).
-pub async fn read_item(
-    conn: &Connection,
-    key: &str,
-    service: &str,
-    obj_path: &str,
-) -> TrayItem {
+pub async fn read_item(conn: &Connection, key: &str, service: &str, obj_path: &str) -> TrayItem {
     let proxy = match StatusNotifierItemProxy::builder(conn)
         .destination(service)
         .and_then(|b| b.path(obj_path))
@@ -136,19 +135,15 @@ pub async fn read_item(
         22,
     );
 
-    let tooltip = proxy
-        .tool_tip()
-        .await
-        .ok()
-        .and_then(|(_, _, t, body)| {
-            if t.is_empty() && body.is_empty() {
-                None
-            } else if body.is_empty() {
-                Some(t)
-            } else {
-                Some(format!("{t}\n{body}"))
-            }
-        });
+    let tooltip = proxy.tool_tip().await.ok().and_then(|(_, _, t, body)| {
+        if t.is_empty() && body.is_empty() {
+            None
+        } else if body.is_empty() {
+            Some(t)
+        } else {
+            Some(format!("{t}\n{body}"))
+        }
+    });
 
     let menu_path = proxy
         .menu()
@@ -158,12 +153,24 @@ pub async fn read_item(
         .map(|p| p.as_str().to_owned());
 
     let menu = if let Some(ref mp) = menu_path {
-        crate::tray::dbusmenu::fetch_menu(conn, service, mp).await.ok()
+        crate::tray::dbusmenu::fetch_menu(conn, service, mp)
+            .await
+            .ok()
     } else {
         None
     };
 
-    TrayItem { key: key.to_owned(), id, title, status, category, icon, tooltip, menu_path, menu }
+    TrayItem {
+        key: key.to_owned(),
+        id,
+        title,
+        status,
+        category,
+        icon,
+        tooltip,
+        menu_path,
+        menu,
+    }
 }
 
 fn empty_item(key: &str) -> TrayItem {
@@ -200,7 +207,9 @@ pub async fn watch_item(
         Err(_) => return,
     };
 
-    let Ok(mut changes) = props_proxy.receive_properties_changed().await else { return };
+    let Ok(mut changes) = props_proxy.receive_properties_changed().await else {
+        return;
+    };
 
     while changes.next().await.is_some() {
         let item = read_item(&conn, &key, &service, &obj_path).await;

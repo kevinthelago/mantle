@@ -164,10 +164,7 @@ fn parse_item(layout: &LayoutTuple) -> MenuItem {
         _ => ToggleState::Indeterminate,
     };
 
-    let children = children_raw
-        .iter()
-        .filter_map(parse_child_value)
-        .collect();
+    let children = children_raw.iter().filter_map(parse_child_value).collect();
 
     MenuItem {
         id: *id,
