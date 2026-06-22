@@ -1,0 +1,52 @@
+.text {
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+}
+
+/* size */
+.size-2xs  { font-size: var(--font-size-2xs); }
+.size-xs   { font-size: var(--font-size-xs); }
+.size-sm   { font-size: var(--font-size-sm); }
+.size-base { font-size: var(--font-size-base); }
+.size-md   { font-size: var(--font-size-md); }
+.size-lg   { font-size: var(--font-size-lg); }
+.size-xl   { font-size: var(--font-size-xl); }
+.size-2xl  { font-size: var(--font-size-2xl); }
+.size-3xl  { font-size: var(--font-size-3xl); }
+.size-4xl  { font-size: var(--font-size-4xl); }
+
+/* weight */
+.weight-normal   { font-weight: var(--font-weight-normal); }
+.weight-medium   { font-weight: var(--font-weight-medium); }
+.weight-semibold { font-weight: var(--font-weight-semibold); }
+.weight-bold     { font-weight: var(--font-weight-bold); }
+
+/* color */
+.color-primary   { color: var(--color-text-primary); }
+.color-secondary { color: var(--color-text-secondary); }
+.color-muted     { color: var(--color-text-muted); }
+.color-disabled  { color: var(--color-text-disabled); }
+.color-inverted  { color: var(--color-text-inverted); }
+.color-brand     { color: var(--color-text-brand); }
+.color-error     { color: var(--color-status-error); }
+.color-success   { color: var(--color-status-success); }
+.color-warning   { color: var(--color-status-warning); }
+
+/* font */
+.font-sans { font-family: var(--font-sans); }
+.font-mono { font-family: var(--font-mono); }
+
+/* line-height */
+.leading-none    { line-height: var(--line-height-none); }
+.leading-tight   { line-height: var(--line-height-tight); }
+.leading-snug    { line-height: var(--line-height-snug); }
+.leading-normal  { line-height: var(--line-height-normal); }
+.leading-relaxed { line-height: var(--line-height-relaxed); }
+.leading-loose   { line-height: var(--line-height-loose); }
+
+/* truncate */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

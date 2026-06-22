@@ -1,0 +1,22 @@
+.separator {
+  background-color: var(--color-border-default);
+  border: none;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.horizontal {
+  display: block;
+  width: 100%;
+  height: 1px;
+}
+
+.vertical {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  align-self: stretch;
+}
+
+.subtle { background-color: var(--color-border-subtle); }
+.strong { background-color: var(--color-border-strong); }

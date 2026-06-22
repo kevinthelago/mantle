@@ -1,0 +1,76 @@
+.wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.content {
+  position: absolute;
+  z-index: var(--z-tooltip);
+  padding: var(--spacing-1-5) var(--spacing-3);
+  background-color: var(--color-bg-inverted);
+  color: var(--color-text-inverted);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-snug);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  max-width: 240px;
+  pointer-events: none;
+  box-shadow: var(--shadow-md);
+
+  /* animate in */
+  opacity: 0;
+  transform: translateY(2px);
+  transition:
+    opacity var(--duration-fast) var(--easing-ease-out),
+    transform var(--duration-fast) var(--easing-ease-out);
+}
+
+.wrapper:hover .content,
+.wrapper:focus-within .content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* placement */
+.top {
+  bottom: calc(100% + var(--spacing-1-5));
+  left: 50%;
+  transform: translateX(-50%) translateY(2px);
+}
+.wrapper:hover .top,
+.wrapper:focus-within .top {
+  transform: translateX(-50%) translateY(0);
+}
+
+.bottom {
+  top: calc(100% + var(--spacing-1-5));
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+}
+.wrapper:hover .bottom,
+.wrapper:focus-within .bottom {
+  transform: translateX(-50%) translateY(0);
+}
+
+.left {
+  right: calc(100% + var(--spacing-1-5));
+  top: 50%;
+  transform: translateY(-50%) translateX(2px);
+}
+.wrapper:hover .left,
+.wrapper:focus-within .left {
+  transform: translateY(-50%) translateX(0);
+}
+
+.right {
+  left: calc(100% + var(--spacing-1-5));
+  top: 50%;
+  transform: translateY(-50%) translateX(-2px);
+}
+.wrapper:hover .right,
+.wrapper:focus-within .right {
+  transform: translateY(-50%) translateX(0);
+}

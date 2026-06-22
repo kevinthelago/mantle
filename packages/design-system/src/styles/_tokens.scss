@@ -1,0 +1,145 @@
+// Sass forward for Mantle design tokens.
+// All values forward directly to CSS custom properties — Sass variables simply alias the vars
+// so that Sass partials can reference tokens without raw var() strings everywhere.
+
+// Colors
+$color-bg-base: var(--color-bg-base);
+$color-bg-surface: var(--color-bg-surface);
+$color-bg-elevated: var(--color-bg-elevated);
+$color-bg-overlay: var(--color-bg-overlay);
+$color-bg-inverted: var(--color-bg-inverted);
+
+$color-text-primary: var(--color-text-primary);
+$color-text-secondary: var(--color-text-secondary);
+$color-text-muted: var(--color-text-muted);
+$color-text-disabled: var(--color-text-disabled);
+$color-text-inverted: var(--color-text-inverted);
+$color-text-brand: var(--color-text-brand);
+
+$color-brand: var(--color-brand-default);
+$color-brand-hover: var(--color-brand-hover);
+$color-brand-active: var(--color-brand-active);
+$color-brand-subtle: var(--color-brand-subtle);
+$color-brand-border: var(--color-brand-border);
+
+$color-border: var(--color-border-default);
+$color-border-strong: var(--color-border-strong);
+$color-border-subtle: var(--color-border-subtle);
+$color-border-brand: var(--color-border-brand);
+
+$color-success: var(--color-status-success);
+$color-success-subtle: var(--color-status-success-subtle);
+$color-error: var(--color-status-error);
+$color-error-subtle: var(--color-status-error-subtle);
+$color-warning: var(--color-status-warning);
+$color-warning-subtle: var(--color-status-warning-subtle);
+$color-info: var(--color-status-info);
+$color-info-subtle: var(--color-status-info-subtle);
+
+$interactive-hover-bg: var(--color-interactive-hover-bg);
+$interactive-active-bg: var(--color-interactive-active-bg);
+$interactive-focus-ring: var(--color-interactive-focus-ring);
+
+// Typography
+$font-sans: var(--font-sans);
+$font-mono: var(--font-mono);
+
+$font-size-2xs: var(--font-size-2xs);
+$font-size-xs: var(--font-size-xs);
+$font-size-sm: var(--font-size-sm);
+$font-size-base: var(--font-size-base);
+$font-size-md: var(--font-size-md);
+$font-size-lg: var(--font-size-lg);
+$font-size-xl: var(--font-size-xl);
+$font-size-2xl: var(--font-size-2xl);
+$font-size-3xl: var(--font-size-3xl);
+$font-size-4xl: var(--font-size-4xl);
+
+$font-weight-normal: var(--font-weight-normal);
+$font-weight-medium: var(--font-weight-medium);
+$font-weight-semibold: var(--font-weight-semibold);
+$font-weight-bold: var(--font-weight-bold);
+
+$line-height-none: var(--line-height-none);
+$line-height-tight: var(--line-height-tight);
+$line-height-snug: var(--line-height-snug);
+$line-height-normal: var(--line-height-normal);
+$line-height-relaxed: var(--line-height-relaxed);
+$line-height-loose: var(--line-height-loose);
+
+$letter-spacing-tight: var(--letter-spacing-tight);
+$letter-spacing-normal: var(--letter-spacing-normal);
+$letter-spacing-wide: var(--letter-spacing-wide);
+$letter-spacing-wider: var(--letter-spacing-wider);
+
+// Spacing
+$spacing-0: var(--spacing-0);
+$spacing-0-5: var(--spacing-0-5);
+$spacing-1: var(--spacing-1);
+$spacing-1-5: var(--spacing-1-5);
+$spacing-2: var(--spacing-2);
+$spacing-2-5: var(--spacing-2-5);
+$spacing-3: var(--spacing-3);
+$spacing-3-5: var(--spacing-3-5);
+$spacing-4: var(--spacing-4);
+$spacing-5: var(--spacing-5);
+$spacing-6: var(--spacing-6);
+$spacing-7: var(--spacing-7);
+$spacing-8: var(--spacing-8);
+$spacing-9: var(--spacing-9);
+$spacing-10: var(--spacing-10);
+$spacing-12: var(--spacing-12);
+$spacing-16: var(--spacing-16);
+$spacing-20: var(--spacing-20);
+$spacing-24: var(--spacing-24);
+$spacing-32: var(--spacing-32);
+
+// Radius
+$radius-none: var(--radius-none);
+$radius-xs: var(--radius-xs);
+$radius-sm: var(--radius-sm);
+$radius-md: var(--radius-md);
+$radius-lg: var(--radius-lg);
+$radius-xl: var(--radius-xl);
+$radius-2xl: var(--radius-2xl);
+$radius-full: var(--radius-full);
+
+// Shadows
+$shadow-none: var(--shadow-none);
+$shadow-xs: var(--shadow-xs);
+$shadow-sm: var(--shadow-sm);
+$shadow-md: var(--shadow-md);
+$shadow-lg: var(--shadow-lg);
+$shadow-xl: var(--shadow-xl);
+
+// Transitions
+$duration-instant: var(--duration-instant);
+$duration-fast: var(--duration-fast);
+$duration-normal: var(--duration-normal);
+$duration-slow: var(--duration-slow);
+$duration-slower: var(--duration-slower);
+
+$easing-linear: var(--easing-linear);
+$easing-ease: var(--easing-ease);
+$easing-ease-in: var(--easing-ease-in);
+$easing-ease-out: var(--easing-ease-out);
+$easing-ease-in-out: var(--easing-ease-in-out);
+$easing-spring: var(--easing-spring);
+
+// Z-index
+$z-base: var(--z-base);
+$z-raised: var(--z-raised);
+$z-dropdown: var(--z-dropdown);
+$z-sticky: var(--z-sticky);
+$z-overlay: var(--z-overlay);
+$z-modal: var(--z-modal);
+$z-popover: var(--z-popover);
+$z-tooltip: var(--z-tooltip);
+$z-toast: var(--z-toast);
+
+// Focus ring mixin
+@mixin focus-ring($offset: 2px) {
+  outline: none;
+  box-shadow: 0 0 0 #{$offset} var(--color-bg-base),
+              0 0 0 calc(#{$offset} + 2px) var(--color-interactive-focus-ring);
+}
