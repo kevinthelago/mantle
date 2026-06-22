@@ -100,8 +100,9 @@ pub fn run() {
                 // Widgets overlay: Top layer, top-right anchored, no exclusive zone,
                 // on-demand keyboard (needed for any user interaction inside widgets).
                 if let Some(widgets_win) = app.get_webview_window("widgets") {
-                    let gtk_win =
-                        widgets_win.gtk_window().expect("failed to get GTK window for widgets");
+                    let gtk_win = widgets_win
+                        .gtk_window()
+                        .expect("failed to get GTK window for widgets");
                     let widgets_config = layer_shell::SurfaceConfig {
                         layer: layer_shell::Layer::Top,
                         anchors: [true, true, false, false], // top + right anchored
@@ -110,7 +111,11 @@ pub fn run() {
                         keyboard_mode: layer_shell::KeyboardMode::OnDemand,
                         namespace: "mantle-widgets".to_string(),
                     };
-                    layer_shell::LayerShellManager::apply_to_window(&gtk_win, &widgets_config, None);
+                    layer_shell::LayerShellManager::apply_to_window(
+                        &gtk_win,
+                        &widgets_config,
+                        None,
+                    );
                     widgets_win.show().expect("failed to show widgets window");
                 }
             }

@@ -19,7 +19,11 @@ impl Default for WidgetLayerConfig {
     fn default() -> Self {
         Self {
             widgets: vec![
-                WidgetConfig { id: "calendar".into(), anchor: "top-right".into(), visible: true },
+                WidgetConfig {
+                    id: "calendar".into(),
+                    anchor: "top-right".into(),
+                    visible: true,
+                },
                 WidgetConfig {
                     id: "system-monitor".into(),
                     anchor: "top-right".into(),
@@ -45,12 +49,16 @@ pub async fn get_widget_config() -> Result<WidgetLayerConfig, String> {
 pub async fn toggle_widget_layer<R: tauri::Runtime>(
     app: tauri::AppHandle<R>,
 ) -> Result<(), String> {
-    app.emit("widget-layer:toggle", ()).map_err(|e| e.to_string())
+    app.emit("widget-layer:toggle", ())
+        .map_err(|e| e.to_string())
 }
 
 pub fn init<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
     tauri::plugin::Builder::new("widget-config")
-        .invoke_handler(tauri::generate_handler![get_widget_config, toggle_widget_layer])
+        .invoke_handler(tauri::generate_handler![
+            get_widget_config,
+            toggle_widget_layer
+        ])
         .build()
 }
 
