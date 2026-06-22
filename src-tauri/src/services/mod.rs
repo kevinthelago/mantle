@@ -1,4 +1,4 @@
-#[cfg(target_os = "linux")]
+#[cfg(all(target_os = "linux", feature = "pipewire-audio"))]
 pub mod audio;
 #[cfg(target_os = "linux")]
 pub mod brightness;
