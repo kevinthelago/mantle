@@ -1,0 +1,45 @@
+/* Design tokens — design-system stream will override via CSS custom properties */
+:root {
+  --surface-1: #1e1e2e;
+  --surface-2: #313244;
+  --surface-3: #45475a;
+  --text-1: #cdd6f4;
+  --text-2: #a6adc8;
+  --text-3: #6c7086;
+  --accent: #89b4fa;
+  --border: rgba(255 255 255 / 0.08);
+  --base: #1e1e2e;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-lg: 1.125rem;
+  --radius-sm: 4px;
+  --result-rows: 8;
+  --result-row-height: 3rem;
+}
+
+.launcher {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-1);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  /* Match tauri.conf.json window dimensions */
+  width: 640px;
+  max-height: 480px;
+  box-shadow: 0 8px 32px rgba(0 0 0 / 0.5);
+  border: 1px solid var(--border);
+  font-family: system-ui, sans-serif;
+}
+
+.error {
+  padding: var(--space-2) var(--space-4);
+  color: #f38ba8;
+  font-size: var(--text-sm);
+  background: rgba(243 139 168 / 0.1);
+  border-bottom: 1px solid rgba(243 139 168 / 0.2);
+  margin: 0;
+}
