@@ -1,5 +1,7 @@
 mod bridge;
+pub mod launcher;
 mod layer_shell;
+#[cfg(target_os = "linux")]
 mod notifications;
 mod registry;
 
@@ -35,6 +37,7 @@ pub fn run() {
     let builder = tauri::Builder::default().invoke_handler(invoke_handler);
 
     // Install all self-registered plugins (services from other streams).
+    // The launcher plugin is self-registered in launcher::plugin via inventory::submit!
     let builder = registry::setup(builder);
 
     builder
@@ -50,6 +53,11 @@ pub fn run() {
                 layer_shell::LayerShellManager::new()
                     .apply(&win, &layer_shell::SurfaceConfig::default_bar())
                     .expect("Failed to apply layer shell to bar window");
+
+                if let Some(launcher_win) = app.get_webview_window("launcher") {
+                    launcher::setup_surface(&launcher_win)
+                        .expect("Failed to apply layer shell to launcher window");
+                }
             }
 
             // On non-Linux, show the window normally so dev/CI still works.

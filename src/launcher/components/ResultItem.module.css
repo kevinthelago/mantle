@@ -1,0 +1,62 @@
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+  transition: background 80ms ease;
+  list-style: none;
+}
+
+.item[data-selected="true"] {
+  background: var(--surface-2, #313244);
+}
+
+.item:hover {
+  background: var(--surface-2, #313244);
+}
+
+.icon {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.iconFallback {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent, #89b4fa);
+  color: var(--base, #1e1e2e);
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: var(--radius-sm, 4px);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.name {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-1, #cdd6f4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.desc {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-3, #6c7086);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
