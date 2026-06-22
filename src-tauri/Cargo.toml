@@ -25,8 +25,8 @@ tauri-build = { version = "2", features = [] }
 tauri = { version = "2", features = [] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-tauri-specta = { version = "2", features = ["derive", "typescript"] }
-specta = { version = "2", features = ["derive"] }
+tauri-specta = { version = "=2.0.0-rc.20", features = ["derive", "typescript"] }
+specta = { version = "=2.0.0-rc.25", features = ["derive"] }
 specta-typescript = "0.0.7"
 inventory = "0.3"
 tokio = { version = "1", features = ["full"] }
