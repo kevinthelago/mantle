@@ -11,6 +11,9 @@
     "build": "tsc && vite build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "echo \"No tests yet\" && exit 0",
     "preview": "vite preview",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
@@ -30,6 +33,7 @@
     "@vitejs/plugin-react": "^4",
     "eslint": "^8",
     "eslint-plugin-react-hooks": "^5",
+    "prettier": "^3",
     "typescript": "^5",
     "vite": "^6"
   }
