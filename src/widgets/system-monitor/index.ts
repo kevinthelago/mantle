@@ -1,1 +1,1 @@
-export { SystemMonitorWidget } from "./SystemMonitorWidget";
+export { SystemMonitorWidget } from './SystemMonitorWidget'

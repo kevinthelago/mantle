@@ -73,7 +73,9 @@
   cursor: pointer;
   font-size: 14px;
   padding: 6px 10px;
-  transition: background 0.1s, color 0.1s;
+  transition:
+    background 0.1s,
+    color 0.1s;
   line-height: 1;
 }
 

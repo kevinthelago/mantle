@@ -6,11 +6,6 @@ import styles from './Brightness.module.css'
 export function BrightnessModule(): React.ReactElement | null {
   const { snap, setBrightness } = useBrightness()
 
-  if (!snap.available) return null
-
-  const pct = Math.round(snap.percentage * 100)
-  const icon = brightnessIcon(snap.percentage)
-
   const handleWheel = useCallback(
     (e: React.WheelEvent) => {
       e.preventDefault()
@@ -19,6 +14,11 @@ export function BrightnessModule(): React.ReactElement | null {
     },
     [snap.percentage, setBrightness],
   )
+
+  if (!snap.available) return null
+
+  const pct = Math.round(snap.percentage * 100)
+  const icon = brightnessIcon(snap.percentage)
 
   return (
     <div

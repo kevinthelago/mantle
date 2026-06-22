@@ -6,11 +6,6 @@ import styles from './Audio.module.css'
 export function AudioModule(): React.ReactElement | null {
   const { snap, setVolume, toggleMute } = useAudio()
 
-  if (!snap.available) return null
-
-  const icon = volumeIconName(snap.icon)
-  const pct = Math.round(snap.volume * 100)
-
   const handleClick = useCallback(() => {
     toggleMute().catch(console.error)
   }, [toggleMute])
@@ -23,6 +18,11 @@ export function AudioModule(): React.ReactElement | null {
     },
     [snap.volume, setVolume],
   )
+
+  if (!snap.available) return null
+
+  const icon = volumeIconName(snap.icon)
+  const pct = Math.round(snap.volume * 100)
 
   return (
     <div

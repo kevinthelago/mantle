@@ -1,1 +1,1 @@
-export { MediaControlsWidget } from "./MediaControlsWidget";
+export { MediaControlsWidget } from './MediaControlsWidget'
