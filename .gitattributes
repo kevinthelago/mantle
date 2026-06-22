@@ -1,0 +1,33 @@
+# Normalize line endings to LF in the repository
+* text=auto eol=lf
+
+# Shell scripts must have LF
+*.sh text eol=lf
+
+# Rust files
+*.rs text eol=lf
+*.toml text eol=lf
+
+# TypeScript/JavaScript
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+
+# Web
+*.html text eol=lf
+*.css text eol=lf
+
+# YAML
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Binaries (no conversion)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary

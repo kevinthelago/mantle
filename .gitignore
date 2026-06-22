@@ -1,0 +1,25 @@
+# Build outputs
+dist/
+target/
+node_modules/
+
+# Tauri
+src-tauri/target/
+
+# Vite
+*.local
+
+# Editor artifacts
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/settings.json
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Storybook
+storybook-static/
