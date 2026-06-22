@@ -1,0 +1,30 @@
+.module {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1, 4px);
+  padding: 0 var(--spacing-2, 8px);
+  font-size: var(--font-size-sm, 12px);
+  color: var(--color-text-primary, #cdd6f4);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.module:hover {
+  color: var(--color-text-accent, #89b4fa);
+}
+
+.module[data-muted='true'] {
+  opacity: 0.5;
+}
+
+.icon {
+  font-size: var(--font-size-base, 14px);
+  line-height: 1;
+}
+
+.label {
+  font-variant-numeric: tabular-nums;
+  min-width: 2.5ch;
+  text-align: right;
+}
