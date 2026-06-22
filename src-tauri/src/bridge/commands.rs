@@ -74,9 +74,7 @@ pub async fn get_output_config(
 
 #[tauri::command]
 #[specta::specta]
-pub async fn get_clock_config(
-    state: State<'_, ConfigState>,
-) -> Result<ClockConfig, BridgeError> {
+pub async fn get_clock_config(state: State<'_, ConfigState>) -> Result<ClockConfig, BridgeError> {
     Ok(state.get().await.clock)
 }
 
@@ -98,10 +96,13 @@ fn format_time(fmt: &str) -> String {
     let m = (secs % 3600) / 60;
     let s = secs % 60;
     fmt.replace("%H", &format!("{h:02}"))
-       .replace("%M", &format!("{m:02}"))
-       .replace("%S", &format!("{s:02}"))
-       .replace("%I", &format!("{:02}", if h % 12 == 0 { 12 } else { h % 12 }))
-       .replace("%p", if h < 12 { "AM" } else { "PM" })
+        .replace("%M", &format!("{m:02}"))
+        .replace("%S", &format!("{s:02}"))
+        .replace(
+            "%I",
+            &format!("{:02}", if h % 12 == 0 { 12 } else { h % 12 }),
+        )
+        .replace("%p", if h < 12 { "AM" } else { "PM" })
 }
 
 #[tauri::command]

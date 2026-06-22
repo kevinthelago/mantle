@@ -60,11 +60,9 @@ impl MetricsService {
 
         let mut nets = self.networks.lock().await;
         nets.refresh();
-        let (net_rx_bytes, net_tx_bytes) =
-            nets.iter()
-                .fold((0u64, 0u64), |(rx, tx), (_, n)| {
-                    (rx + n.received(), tx + n.transmitted())
-                });
+        let (net_rx_bytes, net_tx_bytes) = nets.iter().fold((0u64, 0u64), |(rx, tx), (_, n)| {
+            (rx + n.received(), tx + n.transmitted())
+        });
 
         SystemMetrics {
             cpu_percent,

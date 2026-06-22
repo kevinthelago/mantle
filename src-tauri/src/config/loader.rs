@@ -1,6 +1,6 @@
-use std::path::{Path, PathBuf};
-use anyhow::{Context, Result};
 use super::schema::Config;
+use anyhow::{Context, Result};
+use std::path::{Path, PathBuf};
 
 const CONFIG_DIR: &str = "mantle";
 const CONFIG_FILE: &str = "config.toml";
@@ -25,11 +25,11 @@ pub fn load() -> Result<(Config, PathBuf)> {
         return Ok((Config::default(), path));
     }
 
-    let raw = std::fs::read_to_string(&path)
-        .with_context(|| format!("reading {}", path.display()))?;
+    let raw =
+        std::fs::read_to_string(&path).with_context(|| format!("reading {}", path.display()))?;
 
-    let config: Config = toml::from_str(&raw)
-        .with_context(|| format!("parsing {}", path.display()))?;
+    let config: Config =
+        toml::from_str(&raw).with_context(|| format!("parsing {}", path.display()))?;
 
     log::info!("loaded config from {}", path.display());
     Ok((config, path))
@@ -37,8 +37,8 @@ pub fn load() -> Result<(Config, PathBuf)> {
 
 /// Re-read the config file from `path` (used by the hot-reload watcher).
 pub fn reload(path: &Path) -> Result<Config> {
-    let raw = std::fs::read_to_string(path)
-        .with_context(|| format!("re-reading {}", path.display()))?;
+    let raw =
+        std::fs::read_to_string(path).with_context(|| format!("re-reading {}", path.display()))?;
     toml::from_str(&raw).with_context(|| format!("re-parsing {}", path.display()))
 }
 
@@ -47,8 +47,8 @@ fn write_defaults(path: &Path) -> Result<()> {
         std::fs::create_dir_all(parent)
             .with_context(|| format!("creating config dir {}", parent.display()))?;
     }
-    let default = toml::to_string_pretty(&Config::default())
-        .context("serialising default config")?;
+    let default =
+        toml::to_string_pretty(&Config::default()).context("serialising default config")?;
     let header = "# Mantle config — edit and save; changes apply immediately.\n# Generated on first run.\n\n";
     std::fs::write(path, format!("{header}{default}"))
         .with_context(|| format!("writing {}", path.display()))

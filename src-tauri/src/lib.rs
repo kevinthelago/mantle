@@ -1,7 +1,7 @@
 mod bridge;
 mod config;
-mod layer_shell;
 pub mod launcher;
+mod layer_shell;
 #[cfg(target_os = "linux")]
 mod notifications;
 mod registry;
@@ -28,10 +28,7 @@ pub fn export_bindings() {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    env_logger::Builder::from_env(
-        env_logger::Env::default().default_filter_or("info"),
-    )
-    .init();
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
 
     // Load config from XDG path (writes defaults on first run).
     let (initial_config, config_path) = match loader::load() {

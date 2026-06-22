@@ -73,9 +73,15 @@ impl Default for OutputConfig {
             exclusive: true,
             opacity: 0.95,
             keyboard: KeyboardMode::None,
-            left: RegionConfig { modules: vec!["workspaces".into()] },
-            center: RegionConfig { modules: vec!["clock".into()] },
-            right: RegionConfig { modules: vec!["power-menu".into()] },
+            left: RegionConfig {
+                modules: vec!["workspaces".into()],
+            },
+            center: RegionConfig {
+                modules: vec!["clock".into()],
+            },
+            right: RegionConfig {
+                modules: vec!["power-menu".into()],
+            },
             theme: ThemeConfig::default(),
         }
     }

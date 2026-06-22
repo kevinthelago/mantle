@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::ops::Deref;
-use zbus::{proxy, Connection, Result as ZbusResult};
 use zbus::zvariant::{Array, OwnedValue, Value};
+use zbus::{proxy, Connection, Result as ZbusResult};
 
 pub const MPRIS_PREFIX: &str = "org.mpris.MediaPlayer2.";
 

@@ -2,8 +2,8 @@
 
 #[cfg(target_os = "linux")]
 mod inner {
-    use zbus::{proxy, Connection, Result as ZResult};
     use super::super::super::config::PowerAction;
+    use zbus::{proxy, Connection, Result as ZResult};
 
     #[proxy(
         interface = "org.freedesktop.login1.Manager",
@@ -44,7 +44,10 @@ mod inner {
 
         match action {
             PowerAction::Poweroff => {
-                Login1ManagerProxy::new(&conn).await?.power_off(false).await?;
+                Login1ManagerProxy::new(&conn)
+                    .await?
+                    .power_off(false)
+                    .await?;
             }
             PowerAction::Reboot => {
                 Login1ManagerProxy::new(&conn).await?.reboot(false).await?;
@@ -53,10 +56,16 @@ mod inner {
                 Login1ManagerProxy::new(&conn).await?.suspend(false).await?;
             }
             PowerAction::Hibernate => {
-                Login1ManagerProxy::new(&conn).await?.hibernate(false).await?;
+                Login1ManagerProxy::new(&conn)
+                    .await?
+                    .hibernate(false)
+                    .await?;
             }
             PowerAction::HybridSleep => {
-                Login1ManagerProxy::new(&conn).await?.hybrid_sleep(false).await?;
+                Login1ManagerProxy::new(&conn)
+                    .await?
+                    .hybrid_sleep(false)
+                    .await?;
             }
             PowerAction::Lock | PowerAction::Logout => {
                 let session_path = session_object_path();
@@ -86,7 +95,9 @@ mod inner {
 /// Execute a power action. No-op on non-Linux platforms (compilation guard only).
 pub async fn execute(action: &crate::config::PowerAction) -> anyhow::Result<()> {
     #[cfg(target_os = "linux")]
-    { inner::execute(action).await }
+    {
+        inner::execute(action).await
+    }
 
     #[cfg(not(target_os = "linux"))]
     {

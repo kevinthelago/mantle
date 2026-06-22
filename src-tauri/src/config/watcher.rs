@@ -1,9 +1,11 @@
+use super::{loader, schema::Config};
+use notify::{
+    Config as NotifyConfig, Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher,
+};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
-use notify::{Config as NotifyConfig, Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 use tokio::sync::{mpsc, watch};
-use super::{loader, schema::Config};
 
 /// Spawn a background task that watches the config file for changes and pushes
 /// updated `Config` values through the returned `watch::Receiver`.
@@ -22,10 +24,7 @@ pub fn spawn(config_path: PathBuf, initial: Config) -> watch::Receiver<Config> {
     rx
 }
 
-async fn watch_loop(
-    path: PathBuf,
-    tx: Arc<watch::Sender<Config>>,
-) -> anyhow::Result<()> {
+async fn watch_loop(path: PathBuf, tx: Arc<watch::Sender<Config>>) -> anyhow::Result<()> {
     // Bridge: notify uses std mpsc; we need a tokio-friendly channel.
     let (bridge_tx, mut bridge_rx) = mpsc::channel::<notify::Result<Event>>(32);
 
