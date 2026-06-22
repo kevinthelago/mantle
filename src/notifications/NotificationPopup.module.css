@@ -1,0 +1,174 @@
+/* Popup layer — anchored top-right; managed by layer-shell in the Tauri window. */
+.layer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  pointer-events: none;
+  z-index: 9999;
+  max-width: 400px;
+  width: 100%;
+}
+
+.card {
+  pointer-events: auto;
+  background: var(--color-surface, rgba(30, 30, 40, 0.92));
+  color: var(--color-on-surface, #e8e8f0);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.2);
+  border-left: 3px solid transparent;
+  backdrop-filter: blur(12px);
+  animation: slideIn 200ms ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(110%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Urgency accents */
+.normal {
+  border-left-color: var(--color-primary, #7c8bff);
+}
+
+.low {
+  border-left-color: var(--color-muted, #666);
+}
+
+.critical {
+  border-left-color: var(--color-error, #ff5f5f);
+  background: var(--color-surface-critical, rgba(60, 20, 20, 0.94));
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.appName {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-muted, #aaa);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: var(--color-on-surface-muted, #888);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 2px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.closeBtn:hover {
+  color: var(--color-on-surface, #fff);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Body */
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.summary {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-on-surface, #e8e8f0);
+}
+
+.bodyText {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-on-surface-secondary, #bbb);
+}
+
+.bodyText a {
+  color: var(--color-primary, #7c8bff);
+  text-decoration: none;
+}
+
+.bodyText a:hover {
+  text-decoration: underline;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.actionBtn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-on-surface, #e8e8f0);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 120ms;
+}
+
+.actionBtn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* Progress bar (auto-close timer) */
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--color-primary, #7c8bff);
+  transform-origin: left;
+  animation: shrink linear forwards;
+}
+
+@keyframes shrink {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}

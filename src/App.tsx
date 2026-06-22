@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useCommand } from './lib/bridge'
 import { commands } from './lib/bridge/bindings'
+import { NotificationPopupLayer } from './notifications/NotificationPopup'
+import { NotificationCenter } from './notifications/NotificationCenter'
+import { useNotificationStore } from './notifications/store'
 
 function Clock() {
   const [time, setTime] = useState(() => new Date().toLocaleTimeString())
@@ -23,20 +26,30 @@ function VersionBadge() {
 }
 
 export default function App() {
+  const initNotifications = useNotificationStore((s) => s.init)
+
+  useEffect(() => {
+    return initNotifications()
+  }, [initNotifications])
+
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        height: '100%',
-        padding: '0 12px',
-        color: '#e0e0e0',
-        userSelect: 'none',
-      }}
-    >
-      <VersionBadge />
-      <Clock />
-    </div>
+    <>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          height: '100%',
+          padding: '0 12px',
+          color: '#e0e0e0',
+          userSelect: 'none',
+        }}
+      >
+        <VersionBadge />
+        <Clock />
+      </div>
+      <NotificationPopupLayer />
+      <NotificationCenter />
+    </>
   )
 }

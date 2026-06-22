@@ -1,5 +1,6 @@
 mod bridge;
 mod layer_shell;
+mod notifications;
 mod registry;
 
 const BINDINGS_HEADER: &str =

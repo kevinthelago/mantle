@@ -1,0 +1,44 @@
+.indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--color-on-bar, #e8e8f0);
+  transition: background 120ms;
+  position: relative;
+}
+
+.indicator:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dnd {
+  color: var(--color-on-surface-muted, #888);
+}
+
+.icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 14px;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--color-error, #ff5f5f);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  line-height: 1;
+}
