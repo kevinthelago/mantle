@@ -52,7 +52,12 @@ pub struct Margins {
 
 impl Default for Margins {
     fn default() -> Self {
-        Self { top: 0, bottom: 0, left: 0, right: 0 }
+        Self {
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+        }
     }
 }
 
@@ -101,11 +106,7 @@ impl LayerShellManager {
     ///
     /// Must be called from Tauri's `setup` hook before the window is visible.
     /// On non-Linux platforms this is a no-op (returns Ok, window stays hidden).
-    pub fn apply(
-        &self,
-        win: &tauri::WebviewWindow,
-        config: &SurfaceConfig,
-    ) -> Result<(), String> {
+    pub fn apply(&self, win: &tauri::WebviewWindow, config: &SurfaceConfig) -> Result<(), String> {
         #[cfg(target_os = "linux")]
         return self.apply_linux(win, config);
 
