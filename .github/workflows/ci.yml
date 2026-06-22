@@ -32,6 +32,8 @@ jobs:
             libsoup-3.0-dev \
             libayatana-appindicator3-dev \
             librsvg2-dev \
+            libpipewire-0.3-dev \
+            libspa-0.2-dev \
             libgtk-layer-shell-dev \
             libgtk-layer-shell0 \
             gir1.2-gtklayershell-0.1 \
