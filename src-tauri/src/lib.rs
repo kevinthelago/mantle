@@ -96,12 +96,32 @@ pub fn run() {
                     launcher::setup_surface(&launcher_win)
                         .expect("Failed to apply layer shell to launcher window");
                 }
+
+                // Widgets overlay: Top layer, top-right anchored, no exclusive zone,
+                // on-demand keyboard (needed for any user interaction inside widgets).
+                if let Some(widgets_win) = app.get_webview_window("widgets") {
+                    let gtk_win =
+                        widgets_win.gtk_window().expect("failed to get GTK window for widgets");
+                    let widgets_config = layer_shell::SurfaceConfig {
+                        layer: layer_shell::Layer::Top,
+                        anchors: [true, true, false, false], // top + right anchored
+                        exclusive_zone: layer_shell::ExclusiveZone::None,
+                        margins: (0, 0, 0, 0),
+                        keyboard_mode: layer_shell::KeyboardMode::OnDemand,
+                        namespace: "mantle-widgets".to_string(),
+                    };
+                    layer_shell::LayerShellManager::apply_to_window(&gtk_win, &widgets_config, None);
+                    widgets_win.show().expect("failed to show widgets window");
+                }
             }
 
             // On non-Linux (dev/CI), show the window normally.
             #[cfg(not(target_os = "linux"))]
             {
                 if let Some(win) = app.get_webview_window("bar") {
+                    let _ = win.show();
+                }
+                if let Some(win) = app.get_webview_window("widgets") {
                     let _ = win.show();
                 }
             }

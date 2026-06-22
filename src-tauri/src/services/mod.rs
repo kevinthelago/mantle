@@ -10,3 +10,4 @@ pub mod network;
 pub mod power;
 #[cfg(target_os = "linux")]
 pub mod power_supply;
+pub mod widget_config;
