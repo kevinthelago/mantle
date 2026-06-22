@@ -1,9 +1,12 @@
+#[cfg(target_os = "linux")]
 pub mod audio;
+#[cfg(target_os = "linux")]
 pub mod brightness;
 pub mod metrics;
-pub mod network;
-pub mod power;
-pub mod power_supply;
-
 #[cfg(target_os = "linux")]
 pub mod mpris;
+#[cfg(target_os = "linux")]
+pub mod network;
+pub mod power;
+#[cfg(target_os = "linux")]
+pub mod power_supply;

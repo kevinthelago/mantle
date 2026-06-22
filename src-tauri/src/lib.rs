@@ -6,6 +6,7 @@ pub mod launcher;
 mod notifications;
 mod registry;
 mod services;
+#[cfg(target_os = "linux")]
 mod tray;
 
 use config::{loader, watcher, ConfigState};
