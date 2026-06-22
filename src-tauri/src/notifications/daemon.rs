@@ -6,8 +6,8 @@ use std::time::Duration;
 use base64::Engine as _;
 use tokio::sync::{broadcast, RwLock};
 use tokio::task::AbortHandle;
-use zbus::zvariant::{OwnedValue, Value};
 use zbus::{interface, SignalContext};
+use zbus::zvariant::{OwnedValue, Value};
 
 use super::sanitize::sanitize_body;
 use super::types::*;
@@ -86,8 +86,8 @@ impl ServerState {
         };
         if removed.is_some() {
             if let Some(conn) = self.connection.get() {
-                let ctx =
-                    SignalContext::new(conn, "/org/freedesktop/Notifications").expect("valid path");
+                let ctx = SignalContext::new(conn, "/org/freedesktop/Notifications")
+                    .expect("valid path");
                 let _ = NotificationsServer::notification_closed(&ctx, id, reason as u32).await;
             }
             let _ = self.event_tx.send(NotificationEvent::Closed { id, reason });
@@ -116,10 +116,10 @@ impl NotificationsServer {
         // Rate-limit: drop if too many active notifications.
         {
             let active = self.state.active.read().await;
-            if active.len() >= MAX_ACTIVE
-                && (replaces_id == 0 || !active.contains_key(&replaces_id))
-            {
-                return Err(zbus::fdo::Error::Failed("notification queue full".into()));
+            if active.len() >= MAX_ACTIVE && (replaces_id == 0 || !active.contains_key(&replaces_id)) {
+                return Err(zbus::fdo::Error::Failed(
+                    "notification queue full".into(),
+                ));
             }
         }
 
@@ -213,12 +213,14 @@ impl NotificationsServer {
             })
         };
         if removed.is_some() {
-            let _ =
-                Self::notification_closed(&ctx, id, ClosedReason::CloseNotification as u32).await;
-            let _ = self.state.event_tx.send(NotificationEvent::Closed {
-                id,
-                reason: ClosedReason::CloseNotification,
-            });
+            let _ = Self::notification_closed(&ctx, id, ClosedReason::CloseNotification as u32).await;
+            let _ = self
+                .state
+                .event_tx
+                .send(NotificationEvent::Closed {
+                    id,
+                    reason: ClosedReason::CloseNotification,
+                });
         }
         Ok(())
     }
@@ -239,12 +241,18 @@ impl NotificationsServer {
     }
 
     #[zbus(signal)]
-    async fn notification_closed(ctx: &SignalContext<'_>, id: u32, reason: u32)
-        -> zbus::Result<()>;
+    async fn notification_closed(
+        ctx: &SignalContext<'_>,
+        id: u32,
+        reason: u32,
+    ) -> zbus::Result<()>;
 
     #[zbus(signal)]
-    async fn action_invoked(ctx: &SignalContext<'_>, id: u32, action_key: &str)
-        -> zbus::Result<()>;
+    async fn action_invoked(
+        ctx: &SignalContext<'_>,
+        id: u32,
+        action_key: &str,
+    ) -> zbus::Result<()>;
 }
 
 // ── expiry task ─────────────────────────────────────────────────────────────

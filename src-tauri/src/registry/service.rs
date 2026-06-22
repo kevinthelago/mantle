@@ -24,10 +24,8 @@ inventory::collect!(MantlePlugin);
 
 /// Fold all registered plugins into a Tauri builder.
 pub fn setup(builder: tauri::Builder<tauri::Wry>) -> tauri::Builder<tauri::Wry> {
-    inventory::iter::<MantlePlugin>
-        .into_iter()
-        .fold(builder, |b, plugin| {
-            log::info!("registering plugin: {}", plugin.name);
-            b.plugin((plugin.build)())
-        })
+    inventory::iter::<MantlePlugin>.into_iter().fold(builder, |b, plugin| {
+        log::info!("registering plugin: {}", plugin.name);
+        b.plugin((plugin.build)())
+    })
 }

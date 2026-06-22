@@ -80,7 +80,10 @@ pub async fn resume_notification_expiry(
 }
 
 #[tauri::command]
-pub async fn set_dnd_enabled(enabled: bool, dnd: State<'_, Arc<DndState>>) -> Result<(), String> {
+pub async fn set_dnd_enabled(
+    enabled: bool,
+    dnd: State<'_, Arc<DndState>>,
+) -> Result<(), String> {
     dnd.set_enabled(enabled).await;
     Ok(())
 }
@@ -97,11 +100,7 @@ pub async fn clear_notification_history(
 
 /// Spawns a task that relays ServerState broadcast events to the Tauri frontend
 /// via `app.emit("notification-event", payload)`.
-pub fn spawn_event_relay(
-    app: AppHandle,
-    server: Arc<ServerState>,
-    history: Arc<NotificationHistory>,
-) {
+pub fn spawn_event_relay(app: AppHandle, server: Arc<ServerState>, history: Arc<NotificationHistory>) {
     let mut rx = server.subscribe();
     tokio::spawn(async move {
         loop {
@@ -109,10 +108,7 @@ pub fn spawn_event_relay(
                 Ok(event) => {
                     // Persist to history on add/replace; remove on transient close.
                     match &event {
-                        NotificationEvent::Added(n)
-                        | NotificationEvent::Replaced {
-                            notification: n, ..
-                        } => {
+                        NotificationEvent::Added(n) | NotificationEvent::Replaced { notification: n, .. } => {
                             if !n.transient {
                                 history.push(n.clone()).await;
                             }
