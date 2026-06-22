@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback, DependencyList } from 'react'
+import { useState, useEffect, useCallback, DependencyList } from "react";
 
 export interface CommandState<T> {
-  data: T | null
-  error: string | null
-  loading: boolean
+  data: T | null;
+  error: string | null;
+  loading: boolean;
   /** Re-run the command and refresh state. */
-  refresh: () => void
+  refresh: () => void;
 }
 
 /**
@@ -21,27 +21,27 @@ export function useCommand<T>(
   command: () => Promise<T>,
   deps: DependencyList = [],
 ): CommandState<T> {
-  const [data, setData] = useState<T | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState<T | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const run = useCallback(async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      setData(await command())
+      setData(await command());
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
+      setError(e instanceof Error ? e.message : String(e));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps)
+  }, deps);
 
   useEffect(() => {
-    void run()
-  }, [run])
+    void run();
+  }, [run]);
 
-  return { data, error, loading, refresh: run }
+  return { data, error, loading, refresh: run };
 }
