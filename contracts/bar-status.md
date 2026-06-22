@@ -80,7 +80,6 @@ import { barModule as network } from './modules/network'
 import { barModule as audio } from './modules/audio'
 import { barModule as brightness } from './modules/brightness'
 import { barModule as tray } from './modules/tray'
-
 ;[battery, network, audio, brightness, tray].forEach(registerModule)
 ```
 
