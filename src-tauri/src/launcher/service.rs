@@ -17,6 +17,12 @@ pub struct LauncherService {
     usage: UsageStore,
 }
 
+impl Default for LauncherService {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl LauncherService {
     pub fn new() -> Self {
         let entries = collect_entries();

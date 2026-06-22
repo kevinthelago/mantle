@@ -3,10 +3,6 @@ use crate::registry::MantlePlugin;
 
 use super::LauncherState;
 
-/// Self-register the launcher as a plugin in the Mantle registry.
-///
-/// `inventory::submit!` runs at binary startup; `registry::setup` folds all
-/// registered plugins into the Tauri builder before the app runs.
 inventory::submit! {
     MantlePlugin {
         name: "launcher",

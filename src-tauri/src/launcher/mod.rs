@@ -20,3 +20,9 @@ impl LauncherState {
         Self(Arc::new(RwLock::new(LauncherService::new())))
     }
 }
+
+impl Default for LauncherState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
