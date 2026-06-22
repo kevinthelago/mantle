@@ -8,7 +8,6 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  # Headless Wayland runtime dir (created in the sway step below)
   XDG_RUNTIME_DIR: /tmp/xdg-runtime
 
 jobs:
@@ -20,7 +19,8 @@ jobs:
       - uses: actions/checkout@v4
 
       # ── System dependencies ─────────────────────────────────────────────────
-      # Tauri 2 (webkit2gtk-4.1 / GTK3) + gtk-layer-shell + headless compositor
+      # Tauri 2 (webkit2gtk-4.1 / GTK3) + gtk-layer-shell + headless compositor.
+      # Always installed so the cache is warm before the scaffold lands.
       - name: Install system dependencies
         run: |
           sudo apt-get update -qq
@@ -43,54 +43,66 @@ jobs:
 
       # ── Toolchains ──────────────────────────────────────────────────────────
       - name: Setup Rust (stable)
+        if: hashFiles('src-tauri/Cargo.toml') != ''
         uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 24
+        if: hashFiles('package.json') != ''
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: "24"
+          # Only enable npm cache once the lockfile exists
+          cache: ${{ hashFiles('package-lock.json') != '' && 'npm' || '' }}
 
-      # Caches cargo registry/git + src-tauri/target keyed on Cargo.lock
       - name: Cache Cargo
+        if: hashFiles('src-tauri/Cargo.toml') != ''
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri -> target
 
       # ── Install deps ────────────────────────────────────────────────────────
       - name: npm ci
+        if: hashFiles('package-lock.json') != ''
         run: npm ci
 
       # ── Rust lint & format ──────────────────────────────────────────────────
       - name: rustfmt check
+        if: hashFiles('src-tauri/Cargo.toml') != ''
         run: cargo fmt --manifest-path src-tauri/Cargo.toml --check
 
       - name: clippy
+        if: hashFiles('src-tauri/Cargo.toml') != ''
         run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 
       # ── JS/TS lint & format ─────────────────────────────────────────────────
       - name: ESLint
+        if: hashFiles('package.json') != '' && hashFiles('.eslintrc*', 'eslint.config*') != ''
         run: npm run lint
 
       - name: Prettier check
+        if: hashFiles('package.json') != ''
         run: npm run format:check
 
       - name: TypeScript typecheck
+        if: hashFiles('tsconfig.json') != ''
         run: npm run typecheck
 
       # ── Tests ───────────────────────────────────────────────────────────────
       - name: cargo test
+        if: hashFiles('src-tauri/Cargo.toml') != ''
         run: cargo test --manifest-path src-tauri/Cargo.toml
 
       - name: npm test
+        if: hashFiles('package.json') != ''
         run: npm test
 
       # ── tauri-specta bindings staleness gate ────────────────────────────────
-      # Regenerates TS command bindings from Rust and fails if the committed
+      # Regenerates TS command bindings from Rust and fails if committed
       # files are out of date. Keeps the typed bridge always in sync.
       - name: Check tauri-specta bindings are up to date
+        if: hashFiles('src-tauri/Cargo.toml') != '' && hashFiles('src/lib/bridge') != ''
         run: |
           cargo test --manifest-path src-tauri/Cargo.toml export_bindings -- --exact
           git diff --exit-code -- 'src/lib/bridge/'
@@ -98,6 +110,7 @@ jobs:
       # ── Headless Wayland compositor (nested sway) ───────────────────────────
       # Used for integration tests that require a live Wayland display.
       - name: Start headless Wayland compositor
+        if: hashFiles('src-tauri/Cargo.toml') != ''
         run: |
           mkdir -p /tmp/xdg-runtime
           chmod 700 /tmp/xdg-runtime
@@ -105,7 +118,6 @@ jobs:
           WLR_LIBINPUT_NO_DEVICES=1 \
           XDG_RUNTIME_DIR=/tmp/xdg-runtime \
           sway --headless 2>/dev/null &
-          # Wait up to 10 s for the Wayland socket to appear
           for i in $(seq 1 20); do
             [ -S "/tmp/xdg-runtime/wayland-1" ] && break
             sleep 0.5
@@ -113,6 +125,6 @@ jobs:
           echo "WAYLAND_DISPLAY=wayland-1" >> "$GITHUB_ENV"
 
       # ── Build verification ───────────────────────────────────────────────────
-      # Vite build confirms the TS bundle compiles correctly in production mode.
       - name: Build frontend (production)
+        if: hashFiles('package.json') != ''
         run: npm run build
