@@ -1,0 +1,118 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [develop, main]
+
+env:
+  CARGO_TERM_COLOR: always
+  # Headless Wayland runtime dir (created in the sway step below)
+  XDG_RUNTIME_DIR: /tmp/xdg-runtime
+
+jobs:
+  ci:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── System dependencies ─────────────────────────────────────────────────
+      # Tauri 2 (webkit2gtk-4.1 / GTK3) + gtk-layer-shell + headless compositor
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            build-essential curl wget libssl-dev \
+            libgtk-3-dev \
+            libwebkit2gtk-4.1-dev \
+            libjavascriptcoregtk-4.1-dev \
+            libsoup-3.0-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libgtk-layer-shell-dev \
+            libgtk-layer-shell0 \
+            gir1.2-gtklayershell-0.1 \
+            sway \
+            xvfb \
+            squashfs-tools \
+            libfuse2 \
+            rpm
+
+      # ── Toolchains ──────────────────────────────────────────────────────────
+      - name: Setup Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      # Caches cargo registry/git + src-tauri/target keyed on Cargo.lock
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      # ── Install deps ────────────────────────────────────────────────────────
+      - name: npm ci
+        run: npm ci
+
+      # ── Rust lint & format ──────────────────────────────────────────────────
+      - name: rustfmt check
+        run: cargo fmt --manifest-path src-tauri/Cargo.toml --check
+
+      - name: clippy
+        run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
+
+      # ── JS/TS lint & format ─────────────────────────────────────────────────
+      - name: ESLint
+        run: npm run lint
+
+      - name: Prettier check
+        run: npm run format:check
+
+      - name: TypeScript typecheck
+        run: npm run typecheck
+
+      # ── Tests ───────────────────────────────────────────────────────────────
+      - name: cargo test
+        run: cargo test --manifest-path src-tauri/Cargo.toml
+
+      - name: npm test
+        run: npm test
+
+      # ── tauri-specta bindings staleness gate ────────────────────────────────
+      # Regenerates TS command bindings from Rust and fails if the committed
+      # files are out of date. Keeps the typed bridge always in sync.
+      - name: Check tauri-specta bindings are up to date
+        run: |
+          cargo test --manifest-path src-tauri/Cargo.toml export_bindings -- --exact
+          git diff --exit-code -- 'src/lib/bridge/'
+
+      # ── Headless Wayland compositor (nested sway) ───────────────────────────
+      # Used for integration tests that require a live Wayland display.
+      - name: Start headless Wayland compositor
+        run: |
+          mkdir -p /tmp/xdg-runtime
+          chmod 700 /tmp/xdg-runtime
+          WLR_BACKENDS=headless \
+          WLR_LIBINPUT_NO_DEVICES=1 \
+          XDG_RUNTIME_DIR=/tmp/xdg-runtime \
+          sway --headless 2>/dev/null &
+          # Wait up to 10 s for the Wayland socket to appear
+          for i in $(seq 1 20); do
+            [ -S "/tmp/xdg-runtime/wayland-1" ] && break
+            sleep 0.5
+          done
+          echo "WAYLAND_DISPLAY=wayland-1" >> "$GITHUB_ENV"
+
+      # ── Build verification ───────────────────────────────────────────────────
+      # Vite build confirms the TS bundle compiles correctly in production mode.
+      - name: Build frontend (production)
+        run: npm run build
