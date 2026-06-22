@@ -13,12 +13,11 @@
     "lint": "eslint src --ext .ts,.tsx",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "echo \"No tests yet\" && exit 0",
+    "test": "vitest run",
     "preview": "vite preview",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
-    "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
@@ -29,6 +28,8 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@typescript-eslint/eslint-plugin": "^8",
@@ -36,12 +37,10 @@
     "@vitejs/plugin-react": "^4",
     "eslint": "^8",
     "eslint-plugin-react-hooks": "^5",
+    "jsdom": "^25.0.1",
     "prettier": "^3",
     "typescript": "^5",
     "vite": "^6",
-    "vitest": "^2",
-    "@testing-library/react": "^16",
-    "@testing-library/user-event": "^14",
-    "jsdom": "^25"
+    "vitest": "^2.1.9"
   }
 }

@@ -1,2 +1,2 @@
-export { LauncherApp } from "./LauncherApp";
-export type { AppEntry, Mode, SearchResult } from "./types";
+export { LauncherApp } from './LauncherApp'
+export type { AppEntry, Mode, SearchResult } from './types'

@@ -9,7 +9,7 @@
   list-style: none;
 }
 
-.item[data-selected="true"] {
+.item[data-selected='true'] {
   background: var(--surface-2, #313244);
 }
 
