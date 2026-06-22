@@ -31,9 +31,15 @@
   border-radius: var(--radius-full);
 }
 
-.sm .track { height: 4px; }
-.md .track { height: 6px; }
-.lg .track { height: 8px; }
+.sm .track {
+  height: 4px;
+}
+.md .track {
+  height: 6px;
+}
+.lg .track {
+  height: 8px;
+}
 
 .fill {
   height: 100%;
@@ -42,11 +48,21 @@
 }
 
 /* color variants */
-.brand .fill   { background-color: var(--color-brand-default); }
-.success .fill { background-color: var(--color-status-success); }
-.error .fill   { background-color: var(--color-status-error); }
-.warning .fill { background-color: var(--color-status-warning); }
-.info .fill    { background-color: var(--color-status-info); }
+.brand .fill {
+  background-color: var(--color-brand-default);
+}
+.success .fill {
+  background-color: var(--color-status-success);
+}
+.error .fill {
+  background-color: var(--color-status-error);
+}
+.warning .fill {
+  background-color: var(--color-status-warning);
+}
+.info .fill {
+  background-color: var(--color-status-info);
+}
 
 /* indeterminate */
 .indeterminate .fill {
@@ -55,6 +71,10 @@
 }
 
 @keyframes indeterminate {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(350%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
 }

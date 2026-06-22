@@ -1,5 +1,5 @@
 /* Generated — do not edit. Run `npm run build:tokens` to regenerate. */
-import type { Config } from 'tailwindcss';
+import type { Config } from 'tailwindcss'
 
 const preset = {
   theme: {
@@ -149,6 +149,6 @@ const preset = {
       },
     },
   },
-} satisfies Partial<Config>;
+} satisfies Partial<Config>
 
-export default preset;
+export default preset

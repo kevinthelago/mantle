@@ -1,4 +1,4 @@
-import { create } from '@storybook/theming/create';
+import { create } from '@storybook/theming/create'
 
 export const mantleDarkTheme = create({
   base: 'dark',
@@ -30,7 +30,7 @@ export const mantleDarkTheme = create({
   inputBorder: '#383838',
   inputTextColor: '#f5f5f5',
   inputBorderRadius: 6,
-});
+})
 
 export const mantleLightTheme = create({
   base: 'light',
@@ -58,4 +58,4 @@ export const mantleLightTheme = create({
   inputBorder: '#e1e1e1',
   inputTextColor: '#1a1a1a',
   inputBorderRadius: 6,
-});
+})

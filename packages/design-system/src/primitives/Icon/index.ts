@@ -15,4 +15,4 @@ export {
   SuccessIcon,
   LoaderIcon,
   SettingsIcon,
-} from './Icon.js';
+} from './Icon.js'

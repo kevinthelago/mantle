@@ -1,1 +1,1 @@
-export { Tooltip, type TooltipProps, type TooltipPlacement } from './Tooltip.js';
+export { Tooltip, type TooltipProps, type TooltipPlacement } from './Tooltip.js'

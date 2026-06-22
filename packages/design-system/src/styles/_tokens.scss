@@ -140,6 +140,7 @@ $z-toast: var(--z-toast);
 // Focus ring mixin
 @mixin focus-ring($offset: 2px) {
   outline: none;
-  box-shadow: 0 0 0 #{$offset} var(--color-bg-base),
-              0 0 0 calc(#{$offset} + 2px) var(--color-interactive-focus-ring);
+  box-shadow:
+    0 0 0 #{$offset} var(--color-bg-base),
+    0 0 0 calc(#{$offset} + 2px) var(--color-interactive-focus-ring);
 }

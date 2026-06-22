@@ -1,11 +1,11 @@
-export { NotificationPopupLayer } from "./NotificationPopup";
-export { NotificationCenter } from "./NotificationCenter";
+export { NotificationPopupLayer } from './NotificationPopup'
+export { NotificationCenter } from './NotificationCenter'
 export {
   NotificationIndicator,
   registerNotificationIndicator,
   useNotificationIndicatorRegistration,
-} from "./NotificationIndicator";
-export { useNotificationStore } from "./store";
+} from './NotificationIndicator'
+export { useNotificationStore } from './store'
 export type {
   Notification,
   NotificationAction,
@@ -13,5 +13,5 @@ export type {
   NotificationImage,
   Urgency,
   ClosedReason,
-} from "./types";
-export { parseActions } from "./types";
+} from './types'
+export { parseActions } from './types'

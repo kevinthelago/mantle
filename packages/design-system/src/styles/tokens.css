@@ -139,7 +139,7 @@
   --z-toast: 700;
 }
 
-[data-theme="light"] {
+[data-theme='light'] {
   --color-bg-base: #ffffff;
   --color-bg-surface: #f5f5f5;
   --color-bg-elevated: #ebebeb;

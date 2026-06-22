@@ -1,9 +1,9 @@
-import { forwardRef, type HTMLAttributes, type LiHTMLAttributes, type ReactNode } from 'react';
-import styles from './List.module.css';
+import { forwardRef, type HTMLAttributes, type LiHTMLAttributes, type ReactNode } from 'react'
+import styles from './List.module.css'
 
 export interface ListProps extends HTMLAttributes<HTMLUListElement> {
   /** Set to true when list items are interactive (enables role="listbox" semantics). */
-  interactive?: boolean;
+  interactive?: boolean
 }
 
 /** Styled list container. */
@@ -18,19 +18,19 @@ export const List = forwardRef<HTMLUListElement, ListProps>(function List(
       className={[styles.list, className].filter(Boolean).join(' ')}
       {...rest}
     />
-  );
-});
+  )
+})
 
 export interface ListItemProps extends LiHTMLAttributes<HTMLLIElement> {
   /** Leading element (icon, avatar, etc.) */
-  startSlot?: ReactNode;
+  startSlot?: ReactNode
   /** Trailing element (badge, action, etc.) */
-  endSlot?: ReactNode;
+  endSlot?: ReactNode
   /** Secondary descriptive text below the title. */
-  description?: ReactNode;
-  interactive?: boolean;
-  selected?: boolean;
-  disabled?: boolean;
+  description?: ReactNode
+  interactive?: boolean
+  selected?: boolean
+  disabled?: boolean
 }
 
 /** Row inside a List. */
@@ -56,7 +56,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(' ')
 
   return (
     <li
@@ -68,7 +68,11 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
       tabIndex={interactive && !disabled ? 0 : undefined}
       {...rest}
     >
-      {startSlot && <span className={styles.startSlot} aria-hidden="true">{startSlot}</span>}
+      {startSlot && (
+        <span className={styles.startSlot} aria-hidden="true">
+          {startSlot}
+        </span>
+      )}
       <span className={styles.content}>
         {description ? (
           <>
@@ -81,5 +85,5 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
       </span>
       {endSlot && <span className={styles.endSlot}>{endSlot}</span>}
     </li>
-  );
-});
+  )
+})

@@ -1,1 +1,1 @@
-export { Separator, type SeparatorProps } from './Separator.js';
+export { Separator, type SeparatorProps } from './Separator.js'

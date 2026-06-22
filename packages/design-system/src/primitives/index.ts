@@ -1,6 +1,6 @@
-export { Box } from './Box/index.js';
-export { Stack, type StackProps } from './Stack/index.js';
-export { Text } from './Text/index.js';
+export { Box } from './Box/index.js'
+export { Stack, type StackProps } from './Stack/index.js'
+export { Text } from './Text/index.js'
 export {
   Icon,
   type IconProps,
@@ -18,4 +18,4 @@ export {
   SuccessIcon,
   LoaderIcon,
   SettingsIcon,
-} from './Icon/index.js';
+} from './Icon/index.js'

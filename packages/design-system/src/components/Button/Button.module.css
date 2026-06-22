@@ -39,24 +39,36 @@
   color: var(--color-bg-base);
   border-color: transparent;
 }
-.primary:hover:not(:disabled) { background-color: var(--color-brand-hover); }
-.primary:active:not(:disabled) { background-color: var(--color-brand-active); }
+.primary:hover:not(:disabled) {
+  background-color: var(--color-brand-hover);
+}
+.primary:active:not(:disabled) {
+  background-color: var(--color-brand-active);
+}
 
 .secondary {
   background-color: var(--color-bg-elevated);
   color: var(--color-text-primary);
   border-color: var(--color-border-default);
 }
-.secondary:hover:not(:disabled) { background-color: var(--color-bg-overlay); }
-.secondary:active:not(:disabled) { background-color: var(--color-interactive-active-bg); }
+.secondary:hover:not(:disabled) {
+  background-color: var(--color-bg-overlay);
+}
+.secondary:active:not(:disabled) {
+  background-color: var(--color-interactive-active-bg);
+}
 
 .ghost {
   background-color: transparent;
   color: var(--color-text-primary);
   border-color: transparent;
 }
-.ghost:hover:not(:disabled) { background-color: var(--color-interactive-hover-bg); }
-.ghost:active:not(:disabled) { background-color: var(--color-interactive-active-bg); }
+.ghost:hover:not(:disabled) {
+  background-color: var(--color-interactive-hover-bg);
+}
+.ghost:active:not(:disabled) {
+  background-color: var(--color-interactive-active-bg);
+}
 
 .destructive {
   background-color: var(--color-status-error-subtle);
@@ -67,7 +79,9 @@
   background-color: var(--color-status-error);
   color: var(--color-bg-base);
 }
-.destructive:active:not(:disabled) { filter: brightness(0.9); }
+.destructive:active:not(:disabled) {
+  filter: brightness(0.9);
+}
 
 /* ---- Sizes ---- */
 
@@ -102,6 +116,10 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

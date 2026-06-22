@@ -1,17 +1,17 @@
-import { type HTMLAttributes } from 'react';
-import styles from './ProgressBar.module.css';
+import { type HTMLAttributes } from 'react'
+import styles from './ProgressBar.module.css'
 
-export type ProgressBarColor = 'brand' | 'success' | 'error' | 'warning' | 'info';
-export type ProgressBarSize = 'sm' | 'md' | 'lg';
+export type ProgressBarColor = 'brand' | 'success' | 'error' | 'warning' | 'info'
+export type ProgressBarSize = 'sm' | 'md' | 'lg'
 
 export interface ProgressBarProps extends HTMLAttributes<HTMLDivElement> {
   /** Value 0–100. Omit or pass undefined for indeterminate. */
-  value?: number;
-  max?: number;
-  color?: ProgressBarColor;
-  size?: ProgressBarSize;
-  label?: string;
-  showValue?: boolean;
+  value?: number
+  max?: number
+  color?: ProgressBarColor
+  size?: ProgressBarSize
+  label?: string
+  showValue?: boolean
 }
 
 /** Determinate or indeterminate progress indicator. */
@@ -25,15 +25,13 @@ export function ProgressBar({
   className,
   ...rest
 }: ProgressBarProps) {
-  const indeterminate = value === undefined;
-  const pct = indeterminate ? 0 : Math.min(100, Math.max(0, (value / max) * 100));
+  const indeterminate = value === undefined
+  const pct = indeterminate ? 0 : Math.min(100, Math.max(0, (value / max) * 100))
 
   const wrapperCls = [styles.wrapper, styles[color], styles[size], className]
     .filter(Boolean)
-    .join(' ');
-  const trackCls = [styles.track, indeterminate && styles.indeterminate]
-    .filter(Boolean)
-    .join(' ');
+    .join(' ')
+  const trackCls = [styles.track, indeterminate && styles.indeterminate].filter(Boolean).join(' ')
 
   return (
     <div className={wrapperCls} {...rest}>
@@ -54,11 +52,8 @@ export function ProgressBar({
         aria-label={label}
         aria-valuetext={indeterminate ? 'loading' : `${Math.round(pct)}%`}
       >
-        <div
-          className={styles.fill}
-          style={indeterminate ? undefined : { width: `${pct}%` }}
-        />
+        <div className={styles.fill} style={indeterminate ? undefined : { width: `${pct}%` }} />
       </div>
     </div>
-  );
+  )
 }

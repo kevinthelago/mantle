@@ -9,24 +9,24 @@
 // Result type — mirrors Rust's Result<T, E> for bridge ergonomics
 // ---------------------------------------------------------------------------
 
-export type Ok<T> = { readonly ok: true; readonly value: T };
-export type Err<E> = { readonly ok: false; readonly error: E };
-export type Result<T, E = string> = Ok<T> | Err<E>;
+export type Ok<T> = { readonly ok: true; readonly value: T }
+export type Err<E> = { readonly ok: false; readonly error: E }
+export type Result<T, E = string> = Ok<T> | Err<E>
 
 export function ok<T>(value: T): Ok<T> {
-  return { ok: true, value };
+  return { ok: true, value }
 }
 
 export function err<E>(error: E): Err<E> {
-  return { ok: false, error };
+  return { ok: false, error }
 }
 
 export function isOk<T, E>(r: Result<T, E>): r is Ok<T> {
-  return r.ok;
+  return r.ok
 }
 
 export function isErr<T, E>(r: Result<T, E>): r is Err<E> {
-  return !r.ok;
+  return !r.ok
 }
 
 // ---------------------------------------------------------------------------
@@ -35,5 +35,5 @@ export function isErr<T, E>(r: Result<T, E>): r is Err<E> {
 
 /** Compile-time exhaustiveness check for discriminated unions. */
 export function assertNever(x: never): never {
-  throw new Error(`Unexpected value: ${JSON.stringify(x)}`);
+  throw new Error(`Unexpected value: ${JSON.stringify(x)}`)
 }

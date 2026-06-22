@@ -48,7 +48,7 @@ export const palette = {
     400: '#60a5fa',
     500: '#3b82f6',
   },
-} as const;
+} as const
 
 export const typeScale = {
   fontFamily: {
@@ -87,7 +87,7 @@ export const typeScale = {
     wide: '0.02em',
     wider: '0.05em',
   },
-} as const;
+} as const
 
 export const spacing = {
   '0': '0px',
@@ -112,7 +112,7 @@ export const spacing = {
   '20': '80px',
   '24': '96px',
   '32': '128px',
-} as const;
+} as const
 
 export const radius = {
   none: '0px',
@@ -123,7 +123,7 @@ export const radius = {
   xl: '12px',
   '2xl': '16px',
   full: '9999px',
-} as const;
+} as const
 
 export const shadow = {
   none: 'none',
@@ -132,7 +132,7 @@ export const shadow = {
   md: '0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3)',
   lg: '0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3)',
   xl: '0 20px 25px -5px rgb(0 0 0 / 0.35), 0 8px 10px -6px rgb(0 0 0 / 0.35)',
-} as const;
+} as const
 
 export const transition = {
   duration: {
@@ -150,7 +150,7 @@ export const transition = {
     'ease-in-out': 'cubic-bezier(0.4, 0, 0.2, 1)',
     spring: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
   },
-} as const;
+} as const
 
 export const zIndex = {
   base: '0',
@@ -162,7 +162,7 @@ export const zIndex = {
   popover: '500',
   tooltip: '600',
   toast: '700',
-} as const;
+} as const
 
 /** Semantic token values for dark theme (default — no data-theme attribute). */
 export const semanticDark = {
@@ -211,7 +211,7 @@ export const semanticDark = {
       'focus-ring': palette.orange[500],
     },
   },
-} as const;
+} as const
 
 /** Semantic token values for light theme (data-theme="light"). */
 export const semanticLight = {
@@ -260,4 +260,4 @@ export const semanticLight = {
       'focus-ring': palette.orange[700],
     },
   },
-} as const;
+} as const

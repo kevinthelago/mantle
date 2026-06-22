@@ -3,4 +3,4 @@ export {
   type IconButtonProps,
   type IconButtonVariant,
   type IconButtonSize,
-} from './IconButton.js';
+} from './IconButton.js'

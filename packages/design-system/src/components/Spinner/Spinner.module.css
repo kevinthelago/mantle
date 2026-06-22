@@ -5,14 +5,32 @@
   flex-shrink: 0;
 }
 
-.sm  { width: 14px; height: 14px; }
-.md  { width: 20px; height: 20px; }
-.lg  { width: 28px; height: 28px; }
-.xl  { width: 40px; height: 40px; }
+.sm {
+  width: 14px;
+  height: 14px;
+}
+.md {
+  width: 20px;
+  height: 20px;
+}
+.lg {
+  width: 28px;
+  height: 28px;
+}
+.xl {
+  width: 40px;
+  height: 40px;
+}
 
-.inherit { color: currentColor; }
+.inherit {
+  color: currentColor;
+}
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

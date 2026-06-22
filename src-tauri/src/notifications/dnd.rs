@@ -23,6 +23,8 @@ impl DndState {
 
     pub async fn set_enabled(&self, enabled: bool) {
         *self.enabled.write().await = enabled;
-        let _ = self.event_tx.send(NotificationEvent::DndChanged { enabled });
+        let _ = self
+            .event_tx
+            .send(NotificationEvent::DndChanged { enabled });
     }
 }

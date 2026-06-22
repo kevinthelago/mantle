@@ -1,17 +1,17 @@
-import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
-import styles from './Button.module.css';
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import styles from './Button.module.css'
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive';
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive'
+export type ButtonSize = 'sm' | 'md' | 'lg'
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  loading?: boolean;
+  variant?: ButtonVariant
+  size?: ButtonSize
+  loading?: boolean
   /** Prepend icon */
-  startIcon?: ReactNode;
+  startIcon?: ReactNode
   /** Append icon */
-  endIcon?: ReactNode;
+  endIcon?: ReactNode
 }
 
 /** Interactive button with primary/secondary/ghost/destructive variants. */
@@ -29,15 +29,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   },
   ref,
 ) {
-  const cls = [
-    styles.button,
-    styles[variant],
-    styles[size],
-    loading && styles.loading,
-    className,
-  ]
+  const cls = [styles.button, styles[variant], styles[size], loading && styles.loading, className]
     .filter(Boolean)
-    .join(' ');
+    .join(' ')
 
   return (
     <button
@@ -68,5 +62,5 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       {children}
       {!loading && endIcon}
     </button>
-  );
-});
+  )
+})

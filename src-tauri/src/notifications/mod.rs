@@ -8,9 +8,9 @@ pub mod types;
 use std::sync::Arc;
 
 pub use bridge::{
-    clear_notification_history, dismiss_notification, get_active_notifications,
-    get_dnd_enabled, get_notification_history, invoke_action, pause_notification_expiry,
-    resume_notification_expiry, set_dnd_enabled, spawn_event_relay,
+    clear_notification_history, dismiss_notification, get_active_notifications, get_dnd_enabled,
+    get_notification_history, invoke_action, pause_notification_expiry, resume_notification_expiry,
+    set_dnd_enabled, spawn_event_relay,
 };
 pub use daemon::{NotificationsServer, ServerState};
 pub use dnd::DndState;

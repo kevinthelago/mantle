@@ -3,4 +3,4 @@ export {
   type ProgressBarProps,
   type ProgressBarColor,
   type ProgressBarSize,
-} from './ProgressBar.js';
+} from './ProgressBar.js'

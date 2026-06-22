@@ -1,1 +1,1 @@
-export { Box } from './Box.js';
+export { Box } from './Box.js'

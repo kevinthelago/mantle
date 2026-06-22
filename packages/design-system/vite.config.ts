@@ -1,9 +1,9 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import dts from 'vite-plugin-dts';
-import { resolve } from 'path';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import dts from 'vite-plugin-dts'
+import { resolve } from 'path'
 
-const isStorybook = process.env['STORYBOOK'] === 'true';
+const isStorybook = process.env['STORYBOOK'] === 'true'
 
 export default defineConfig({
   plugins: [
@@ -47,9 +47,9 @@ export default defineConfig({
       output: {
         assetFileNames: (assetInfo) => {
           if (assetInfo.names?.some((n) => n.endsWith('.css'))) {
-            return 'styles/[name][extname]';
+            return 'styles/[name][extname]'
           }
-          return '[name][extname]';
+          return '[name][extname]'
         },
         globals: {
           react: 'React',
@@ -59,4 +59,4 @@ export default defineConfig({
     },
     cssMinify: false,
   },
-});
+})

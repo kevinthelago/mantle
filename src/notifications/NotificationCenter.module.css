@@ -60,7 +60,9 @@
   color: var(--color-on-surface-muted, #aaa);
   font-size: 11px;
   cursor: pointer;
-  transition: background 120ms, color 120ms;
+  transition:
+    background 120ms,
+    color 120ms;
 }
 
 .dndToggle:hover {

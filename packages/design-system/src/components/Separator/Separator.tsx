@@ -1,9 +1,9 @@
-import { type HTMLAttributes } from 'react';
-import styles from './Separator.module.css';
+import { type HTMLAttributes } from 'react'
+import styles from './Separator.module.css'
 
 export interface SeparatorProps extends HTMLAttributes<HTMLHRElement> {
-  orientation?: 'horizontal' | 'vertical';
-  strength?: 'subtle' | 'default' | 'strong';
+  orientation?: 'horizontal' | 'vertical'
+  strength?: 'subtle' | 'default' | 'strong'
 }
 
 /** Visual divider — horizontal or vertical. */
@@ -20,7 +20,7 @@ export function Separator({
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(' ')
 
-  return <hr role="separator" aria-orientation={orientation} className={cls} {...rest} />;
+  return <hr role="separator" aria-orientation={orientation} className={cls} {...rest} />
 }

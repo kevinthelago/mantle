@@ -1,5 +1,5 @@
-import { useEffect, DependencyList } from "react";
-import { listen, type UnlistenFn } from "@tauri-apps/api/event";
+import { useEffect, DependencyList } from 'react'
+import { listen, type UnlistenFn } from '@tauri-apps/api/event'
 
 /**
  * Subscribes to a Tauri backend event and fires `handler` on each payload.
@@ -19,22 +19,19 @@ export function useTauriEvent<T>(
   deps: DependencyList = [],
 ): void {
   useEffect(() => {
-    let unlisten: UnlistenFn | undefined;
+    let unlisten: UnlistenFn | undefined
 
     listen<T>(event, (e) => handler(e.payload))
       .then((fn) => {
-        unlisten = fn;
+        unlisten = fn
       })
       .catch((err) => {
-        console.error(
-          `[useTauriEvent] failed to subscribe to "${event}":`,
-          err,
-        );
-      });
+        console.error(`[useTauriEvent] failed to subscribe to "${event}":`, err)
+      })
 
     return () => {
-      unlisten?.();
-    };
+      unlisten?.()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [event, ...deps]);
+  }, [event, ...deps])
 }

@@ -4,4 +4,4 @@ export {
   MenuItem,
   type MenuItemProps,
   MenuSeparator,
-} from './Popover.js';
+} from './Popover.js'

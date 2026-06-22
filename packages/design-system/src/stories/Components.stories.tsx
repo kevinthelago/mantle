@@ -1,15 +1,15 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { Badge } from '../components/Badge/Badge.js';
-import { IconButton } from '../components/IconButton/IconButton.js';
-import { Tooltip } from '../components/Tooltip/Tooltip.js';
-import { Popover, MenuItem, MenuSeparator } from '../components/Popover/Popover.js';
-import { Slider } from '../components/Slider/Slider.js';
-import { ProgressBar } from '../components/ProgressBar/ProgressBar.js';
-import { Spinner } from '../components/Spinner/Spinner.js';
-import { Separator } from '../components/Separator/Separator.js';
-import { List, ListItem } from '../components/List/List.js';
-import { Stack } from '../primitives/Stack/Stack.js';
-import { Text } from '../primitives/Text/Text.js';
+import type { Meta, StoryObj } from '@storybook/react'
+import { Badge } from '../components/Badge/Badge.js'
+import { IconButton } from '../components/IconButton/IconButton.js'
+import { Tooltip } from '../components/Tooltip/Tooltip.js'
+import { Popover, MenuItem, MenuSeparator } from '../components/Popover/Popover.js'
+import { Slider } from '../components/Slider/Slider.js'
+import { ProgressBar } from '../components/ProgressBar/ProgressBar.js'
+import { Spinner } from '../components/Spinner/Spinner.js'
+import { Separator } from '../components/Separator/Separator.js'
+import { List, ListItem } from '../components/List/List.js'
+import { Stack } from '../primitives/Stack/Stack.js'
+import { Text } from '../primitives/Text/Text.js'
 import {
   CloseIcon,
   SettingsIcon,
@@ -17,17 +17,17 @@ import {
   SearchIcon,
   CheckIcon,
   InfoIcon,
-} from '../primitives/Icon/Icon.js';
-import { useState } from 'react';
-import { Button } from '../components/Button/Button.js';
+} from '../primitives/Icon/Icon.js'
+import { useState } from 'react'
+import { Button } from '../components/Button/Button.js'
 
 /* ---- Badge ---- */
 const BadgeMeta: Meta<typeof Badge> = {
   title: 'Components/Badge',
   component: Badge,
   tags: ['autodocs'],
-};
-export default BadgeMeta;
+}
+export default BadgeMeta
 
 export const BadgeVariants: StoryObj = {
   name: 'All variants',
@@ -41,32 +41,46 @@ export const BadgeVariants: StoryObj = {
       <Badge variant="info">info</Badge>
     </Stack>
   ),
-};
+}
 
 export const BadgeWithDot: StoryObj = {
   name: 'With dot',
   render: () => (
     <Stack direction="row" gap="2" align="center" wrap>
       <Badge dot>Offline</Badge>
-      <Badge dot variant="success">Online</Badge>
-      <Badge dot variant="warning">Away</Badge>
-      <Badge dot variant="error">Error</Badge>
+      <Badge dot variant="success">
+        Online
+      </Badge>
+      <Badge dot variant="warning">
+        Away
+      </Badge>
+      <Badge dot variant="error">
+        Error
+      </Badge>
     </Stack>
   ),
-};
+}
 
 /* ---- IconButton ---- */
 export const IconButtonGallery: StoryObj = {
   name: 'IconButton — variants',
   render: () => (
     <Stack direction="row" gap="3" align="center">
-      <IconButton aria-label="Close" variant="ghost"><CloseIcon size="md" /></IconButton>
-      <IconButton aria-label="Settings" variant="secondary"><SettingsIcon size="md" /></IconButton>
-      <IconButton aria-label="Search" variant="primary"><SearchIcon size="md" /></IconButton>
-      <IconButton aria-label="Delete" variant="destructive"><CloseIcon size="md" /></IconButton>
+      <IconButton aria-label="Close" variant="ghost">
+        <CloseIcon size="md" />
+      </IconButton>
+      <IconButton aria-label="Settings" variant="secondary">
+        <SettingsIcon size="md" />
+      </IconButton>
+      <IconButton aria-label="Search" variant="primary">
+        <SearchIcon size="md" />
+      </IconButton>
+      <IconButton aria-label="Delete" variant="destructive">
+        <CloseIcon size="md" />
+      </IconButton>
     </Stack>
   ),
-};
+}
 
 /* ---- Tooltip ---- */
 export const TooltipPlacements: StoryObj = {
@@ -87,7 +101,7 @@ export const TooltipPlacements: StoryObj = {
       </Tooltip>
     </Stack>
   ),
-};
+}
 
 /* ---- Popover/Menu ---- */
 export const PopoverMenu: StoryObj = {
@@ -104,18 +118,20 @@ export const PopoverMenu: StoryObj = {
         <MenuItem icon={<SettingsIcon size="md" />}>Settings</MenuItem>
         <MenuItem icon={<SearchIcon size="md" />}>Search</MenuItem>
         <MenuSeparator />
-        <MenuItem danger icon={<CloseIcon size="md" />}>Delete</MenuItem>
+        <MenuItem danger icon={<CloseIcon size="md" />}>
+          Delete
+        </MenuItem>
       </Popover>
     </Stack>
   ),
-};
+}
 
 /* ---- Slider ---- */
 export const SliderBasic: StoryObj = {
   name: 'Slider',
   render: () => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [v, setV] = useState(40);
+    const [v, setV] = useState(40)
     return (
       <Stack gap="4" style={{ maxWidth: 320 }}>
         <Slider
@@ -127,12 +143,20 @@ export const SliderBasic: StoryObj = {
           onChange={(e) => setV(Number(e.target.value))}
           formatValue={(n) => `${n}%`}
         />
-        <Slider label="Opacity" min={0} max={1} step={0.01} defaultValue={0.8} showValue formatValue={(n) => `${Math.round(n * 100)}%`} />
+        <Slider
+          label="Opacity"
+          min={0}
+          max={1}
+          step={0.01}
+          defaultValue={0.8}
+          showValue
+          formatValue={(n) => `${Math.round(n * 100)}%`}
+        />
         <Slider label="Disabled" min={0} max={100} defaultValue={60} disabled />
       </Stack>
-    );
+    )
   },
-};
+}
 
 /* ---- ProgressBar ---- */
 export const ProgressBarVariants: StoryObj = {
@@ -146,7 +170,7 @@ export const ProgressBarVariants: StoryObj = {
       <ProgressBar label="Indeterminate" />
     </Stack>
   ),
-};
+}
 
 /* ---- Spinner ---- */
 export const SpinnerSizes: StoryObj = {
@@ -156,12 +180,14 @@ export const SpinnerSizes: StoryObj = {
       {(['sm', 'md', 'lg', 'xl'] as const).map((s) => (
         <Stack key={s} gap="1" align="center">
           <Spinner size={s} />
-          <Text size="2xs" color="muted">{s}</Text>
+          <Text size="2xs" color="muted">
+            {s}
+          </Text>
         </Stack>
       ))}
     </Stack>
   ),
-};
+}
 
 /* ---- Separator ---- */
 export const SeparatorDemo: StoryObj = {
@@ -182,7 +208,7 @@ export const SeparatorDemo: StoryObj = {
       </Stack>
     </Stack>
   ),
-};
+}
 
 /* ---- List ---- */
 export const ListDemo: StoryObj = {
@@ -190,8 +216,12 @@ export const ListDemo: StoryObj = {
   render: () => (
     <Stack gap="4">
       <List style={{ maxWidth: 300 }}>
-        <ListItem startSlot={<InfoIcon size="md" />} description="Descriptive text">First item</ListItem>
-        <ListItem startSlot={<CheckIcon size="md" />} description="With icon and description">Second item</ListItem>
+        <ListItem startSlot={<InfoIcon size="md" />} description="Descriptive text">
+          First item
+        </ListItem>
+        <ListItem startSlot={<CheckIcon size="md" />} description="With icon and description">
+          Second item
+        </ListItem>
         <ListItem startSlot={<SettingsIcon size="md" />} endSlot={<ChevronDownIcon size="sm" />}>
           Third item
         </ListItem>
@@ -200,9 +230,11 @@ export const ListDemo: StoryObj = {
 
       <List interactive style={{ maxWidth: 300 }}>
         {['Option A', 'Option B', 'Option C'].map((opt, i) => (
-          <ListItem key={opt} interactive selected={i === 1}>{opt}</ListItem>
+          <ListItem key={opt} interactive selected={i === 1}>
+            {opt}
+          </ListItem>
         ))}
       </List>
     </Stack>
   ),
-};
+}

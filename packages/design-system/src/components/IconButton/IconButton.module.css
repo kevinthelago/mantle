@@ -31,8 +31,12 @@
   background-color: var(--color-brand-default);
   color: var(--color-bg-base);
 }
-.primary:hover:not(:disabled) { background-color: var(--color-brand-hover); }
-.primary:active:not(:disabled) { background-color: var(--color-brand-active); }
+.primary:hover:not(:disabled) {
+  background-color: var(--color-brand-hover);
+}
+.primary:active:not(:disabled) {
+  background-color: var(--color-brand-active);
+}
 
 .secondary {
   background-color: var(--color-bg-elevated);
@@ -62,6 +66,17 @@
 }
 
 /* sizes */
-.sm { width: 28px; height: 28px; border-radius: var(--radius-sm); }
-.md { width: 32px; height: 32px; }
-.lg { width: 40px; height: 40px; border-radius: var(--radius-lg); }
+.sm {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+}
+.md {
+  width: 32px;
+  height: 32px;
+}
+.lg {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+}

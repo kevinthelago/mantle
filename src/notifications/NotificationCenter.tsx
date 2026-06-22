@@ -1,38 +1,32 @@
-import { Notification, parseActions } from "./types";
-import { useNotificationStore } from "./store";
-import styles from "./NotificationCenter.module.css";
+import { Notification, parseActions } from './types'
+import { useNotificationStore } from './store'
+import styles from './NotificationCenter.module.css'
 
 // ── history item ──────────────────────────────────────────────────────────────
 
 interface HistoryItemProps {
-  notification: Notification;
+  notification: Notification
 }
 
 function HistoryItem({ notification: n }: HistoryItemProps) {
-  const { dismiss, invokeAction } = useNotificationStore();
-  const actions = parseActions(n.actions);
+  const { dismiss, invokeAction } = useNotificationStore()
+  const actions = parseActions(n.actions)
 
   const imageUrl = n.image
     ? `data:image/png;base64,${n.image.data_b64}`
     : n.image_path
-    ? `file://${n.image_path}`
-    : null;
+      ? `file://${n.image_path}`
+      : null
 
   const timestamp = new Date(n.created_at * 1000).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 
   return (
-    <div
-      className={`${styles.item} ${
-        n.urgency === "critical" ? styles.critical : ""
-      }`}
-    >
+    <div className={`${styles.item} ${n.urgency === 'critical' ? styles.critical : ''}`}>
       <div className={styles.itemHeader}>
-        {imageUrl && (
-          <img className={styles.icon} src={imageUrl} alt={n.app_name} />
-        )}
+        {imageUrl && <img className={styles.icon} src={imageUrl} alt={n.app_name} />}
         <span className={styles.appName}>{n.app_name}</span>
         <span className={styles.time}>{timestamp}</span>
         <button
@@ -44,12 +38,7 @@ function HistoryItem({ notification: n }: HistoryItemProps) {
         </button>
       </div>
       <p className={styles.summary}>{n.summary}</p>
-      {n.body && (
-        <p
-          className={styles.body}
-          dangerouslySetInnerHTML={{ __html: n.body }}
-        />
-      )}
+      {n.body && <p className={styles.body} dangerouslySetInnerHTML={{ __html: n.body }} />}
       {actions.length > 0 && (
         <div className={styles.actions}>
           {actions.map((a) => (
@@ -64,46 +53,42 @@ function HistoryItem({ notification: n }: HistoryItemProps) {
         </div>
       )}
     </div>
-  );
+  )
 }
 
 // ── DND toggle ────────────────────────────────────────────────────────────────
 
 function DndToggle() {
-  const dndEnabled = useNotificationStore((s) => s.dndEnabled);
-  const setDnd = useNotificationStore((s) => s.setDnd);
+  const dndEnabled = useNotificationStore((s) => s.dndEnabled)
+  const setDnd = useNotificationStore((s) => s.setDnd)
 
   return (
     <button
-      className={`${styles.dndToggle} ${dndEnabled ? styles.dndActive : ""}`}
+      className={`${styles.dndToggle} ${dndEnabled ? styles.dndActive : ''}`}
       onClick={() => setDnd(!dndEnabled)}
       aria-pressed={dndEnabled}
-      title={dndEnabled ? "Do Not Disturb: ON" : "Do Not Disturb: OFF"}
+      title={dndEnabled ? 'Do Not Disturb: ON' : 'Do Not Disturb: OFF'}
     >
-      <span className={styles.dndIcon}>{dndEnabled ? "🔕" : "🔔"}</span>
-      <span>{dndEnabled ? "DND on" : "DND off"}</span>
+      <span className={styles.dndIcon}>{dndEnabled ? '🔕' : '🔔'}</span>
+      <span>{dndEnabled ? 'DND on' : 'DND off'}</span>
     </button>
-  );
+  )
 }
 
 // ── notification center panel ─────────────────────────────────────────────────
 
 export function NotificationCenter() {
-  const centerOpen = useNotificationStore((s) => s.centerOpen);
-  const closeCenter = useNotificationStore((s) => s.closeCenter);
-  const history = useNotificationStore((s) => s.history);
-  const clearHistory = useNotificationStore((s) => s.clearHistory);
+  const centerOpen = useNotificationStore((s) => s.centerOpen)
+  const closeCenter = useNotificationStore((s) => s.closeCenter)
+  const history = useNotificationStore((s) => s.history)
+  const clearHistory = useNotificationStore((s) => s.clearHistory)
 
-  if (!centerOpen) return null;
+  if (!centerOpen) return null
 
   return (
     <>
       {/* Click-away backdrop */}
-      <div
-        className={styles.backdrop}
-        onClick={closeCenter}
-        aria-hidden="true"
-      />
+      <div className={styles.backdrop} onClick={closeCenter} aria-hidden="true" />
 
       <aside className={styles.panel} aria-label="Notification Center">
         <div className={styles.toolbar}>
@@ -132,5 +117,5 @@ export function NotificationCenter() {
         </div>
       </aside>
     </>
-  );
+  )
 }

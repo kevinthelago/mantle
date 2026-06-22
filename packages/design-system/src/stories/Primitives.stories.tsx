@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { Box } from '../primitives/Box/Box.js';
-import { Stack } from '../primitives/Stack/Stack.js';
-import { Text } from '../primitives/Text/Text.js';
+import type { Meta, StoryObj } from '@storybook/react'
+import { Box } from '../primitives/Box/Box.js'
+import { Stack } from '../primitives/Stack/Stack.js'
+import { Text } from '../primitives/Text/Text.js'
 import {
   Icon,
   ChevronDownIcon,
@@ -13,15 +13,15 @@ import {
   ErrorIcon,
   SuccessIcon,
   SettingsIcon,
-} from '../primitives/Icon/Icon.js';
+} from '../primitives/Icon/Icon.js'
 
 /* ---- Box ---- */
 const BoxMeta: Meta<typeof Box> = {
   title: 'Primitives/Box',
   component: Box,
   tags: ['autodocs'],
-};
-export default BoxMeta;
+}
+export default BoxMeta
 
 export const BoxDefault: StoryObj<typeof Box> = {
   name: 'Default',
@@ -40,7 +40,7 @@ export const BoxDefault: StoryObj<typeof Box> = {
       Box — renders as a &lt;div&gt; by default
     </Box>
   ),
-};
+}
 
 export const BoxAsSection: StoryObj<typeof Box> = {
   name: 'Polymorphic (as section)',
@@ -59,7 +59,7 @@ export const BoxAsSection: StoryObj<typeof Box> = {
       Renders as &lt;section&gt;
     </Box>
   ),
-};
+}
 
 /* ---- Stack ---- */
 export const StackStories: StoryObj = {
@@ -83,7 +83,7 @@ export const StackStories: StoryObj = {
       ))}
     </Stack>
   ),
-};
+}
 
 export const StackRow: StoryObj = {
   name: 'Stack — row',
@@ -106,7 +106,7 @@ export const StackRow: StoryObj = {
       ))}
     </Stack>
   ),
-};
+}
 
 /* ---- Text ---- */
 export const TextScale: StoryObj = {
@@ -120,20 +120,22 @@ export const TextScale: StoryObj = {
       ))}
     </Stack>
   ),
-};
+}
 
 export const TextColors: StoryObj = {
   name: 'Text — colors',
   render: () => (
     <Stack gap="2">
-      {(['primary', 'secondary', 'muted', 'brand', 'error', 'success', 'warning'] as const).map((c) => (
-        <Text key={c} color={c}>
-          color=&quot;{c}&quot;
-        </Text>
-      ))}
+      {(['primary', 'secondary', 'muted', 'brand', 'error', 'success', 'warning'] as const).map(
+        (c) => (
+          <Text key={c} color={c}>
+            color=&quot;{c}&quot;
+          </Text>
+        ),
+      )}
     </Stack>
   ),
-};
+}
 
 export const TextMono: StoryObj = {
   name: 'Text — monospace',
@@ -142,7 +144,7 @@ export const TextMono: StoryObj = {
       const greeting = &apos;hello, world&apos;;
     </Text>
   ),
-};
+}
 
 /* ---- Icon ---- */
 export const IconSizes: StoryObj = {
@@ -152,12 +154,14 @@ export const IconSizes: StoryObj = {
       {(['xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const).map((size) => (
         <Stack key={size} gap="1" align="center">
           <CheckIcon size={size} />
-          <Text size="2xs" color="muted">{size}</Text>
+          <Text size="2xs" color="muted">
+            {size}
+          </Text>
         </Stack>
       ))}
     </Stack>
   ),
-};
+}
 
 export const IconGallery: StoryObj = {
   name: 'Icon — gallery',
@@ -174,4 +178,4 @@ export const IconGallery: StoryObj = {
       <SettingsIcon size="lg" label="Settings" />
     </Stack>
   ),
-};
+}

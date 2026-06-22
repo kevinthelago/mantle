@@ -1,9 +1,9 @@
-import type { Preview, Decorator } from '@storybook/react';
-import { mantleDarkTheme, mantleLightTheme } from './mantleTheme.js';
-import '../src/styles/tokens.css';
+import type { Preview, Decorator } from '@storybook/react'
+import { mantleDarkTheme, mantleLightTheme } from './mantleTheme.js'
+import '../src/styles/tokens.css'
 
 const withTheme: Decorator = (Story, context) => {
-  const theme = (context.globals['theme'] as string) ?? 'dark';
+  const theme = (context.globals['theme'] as string) ?? 'dark'
   return (
     <div
       data-theme={theme === 'light' ? 'light' : undefined}
@@ -16,8 +16,8 @@ const withTheme: Decorator = (Story, context) => {
     >
       <Story />
     </div>
-  );
-};
+  )
+}
 
 const preview: Preview = {
   decorators: [withTheme],
@@ -50,6 +50,6 @@ const preview: Preview = {
       },
     },
   },
-};
+}
 
-export default preview;
+export default preview

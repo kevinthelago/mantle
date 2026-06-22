@@ -8,6 +8,6 @@ export {
   zIndex,
   semanticDark,
   semanticLight,
-} from './tokens.js';
+} from './tokens.js'
 
-export { generateTokensCSS, generateTailwindPreset } from './generate.js';
+export { generateTokensCSS, generateTailwindPreset } from './generate.js'

@@ -1,49 +1,41 @@
-import { useRef } from "react";
-import { Notification, NotificationAction, parseActions } from "./types";
-import { useNotificationStore } from "./store";
-import styles from "./NotificationPopup.module.css";
+import { Notification, NotificationAction, parseActions } from './types'
+import { useNotificationStore } from './store'
+import styles from './NotificationPopup.module.css'
 
 // ── single popup card ─────────────────────────────────────────────────────────
 
 interface PopupCardProps {
-  notification: Notification;
+  notification: Notification
 }
 
 function PopupCard({ notification: n }: PopupCardProps) {
-  const { dismiss, invokeAction, pauseExpiry, resumeExpiry } =
-    useNotificationStore();
-  const actions = parseActions(n.actions);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { dismiss, invokeAction, pauseExpiry, resumeExpiry } = useNotificationStore()
+  const actions = parseActions(n.actions)
 
   const handleMouseEnter = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    pauseExpiry(n.id);
-  };
+    pauseExpiry(n.id)
+  }
 
   const handleMouseLeave = () => {
-    resumeExpiry(n.id);
-  };
+    resumeExpiry(n.id)
+  }
 
   const handleDismiss = () => {
-    dismiss(n.id);
-  };
+    dismiss(n.id)
+  }
 
   const handleAction = (action: NotificationAction) => {
-    invokeAction(n.id, action.key);
-  };
+    invokeAction(n.id, action.key)
+  }
 
   const urgencyClass =
-    n.urgency === "critical"
-      ? styles.critical
-      : n.urgency === "low"
-      ? styles.low
-      : styles.normal;
+    n.urgency === 'critical' ? styles.critical : n.urgency === 'low' ? styles.low : styles.normal
 
   const imageUrl = n.image
     ? `data:image/png;base64,${n.image.data_b64}`
     : n.image_path
-    ? `file://${n.image_path}`
-    : null;
+      ? `file://${n.image_path}`
+      : null
 
   return (
     <div
@@ -51,17 +43,11 @@ function PopupCard({ notification: n }: PopupCardProps) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       role="alert"
-      aria-live={n.urgency === "critical" ? "assertive" : "polite"}
+      aria-live={n.urgency === 'critical' ? 'assertive' : 'polite'}
     >
       <div className={styles.header}>
         {imageUrl && (
-          <img
-            className={styles.icon}
-            src={imageUrl}
-            alt={n.app_name}
-            width={32}
-            height={32}
-          />
+          <img className={styles.icon} src={imageUrl} alt={n.app_name} width={32} height={32} />
         )}
         {!imageUrl && n.app_icon && (
           <img
@@ -71,7 +57,8 @@ function PopupCard({ notification: n }: PopupCardProps) {
             width={32}
             height={32}
             onError={(e) => {
-              (e.currentTarget as HTMLImageElement).style.display = "none";
+              const img = e.currentTarget as HTMLImageElement
+              img.style.display = 'none'
             }}
           />
         )}
@@ -115,21 +102,21 @@ function PopupCard({ notification: n }: PopupCardProps) {
           className={styles.progressBar}
           style={{
             animationDuration: `${n.expire_timeout_ms}ms`,
-            animationPlayState: "running",
+            animationPlayState: 'running',
           }}
         />
       )}
     </div>
-  );
+  )
 }
 
 // ── popup layer (all active popups) ──────────────────────────────────────────
 
 export function NotificationPopupLayer() {
-  const active = useNotificationStore((s) => s.active);
-  const dndEnabled = useNotificationStore((s) => s.dndEnabled);
+  const active = useNotificationStore((s) => s.active)
+  const dndEnabled = useNotificationStore((s) => s.dndEnabled)
 
-  if (dndEnabled) return null;
+  if (dndEnabled) return null
 
   return (
     <div className={styles.layer} aria-label="Notifications">
@@ -137,5 +124,5 @@ export function NotificationPopupLayer() {
         <PopupCard key={n.id} notification={n} />
       ))}
     </div>
-  );
+  )
 }
