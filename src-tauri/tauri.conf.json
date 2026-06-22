@@ -47,6 +47,18 @@
         "resizable": false,
         "alwaysOnTop": true,
         "skipTaskbar": true
+      },
+      {
+        "label": "widgets",
+        "title": "",
+        "visible": false,
+        "decorations": false,
+        "transparent": true,
+        "width": 400,
+        "height": 800,
+        "resizable": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true
       }
     ],
     "security": {

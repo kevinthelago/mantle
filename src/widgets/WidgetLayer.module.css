@@ -1,0 +1,44 @@
+.layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 12px;
+}
+
+.slot {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 300px;
+}
+
+/* Anchor positions */
+.top_left {
+  align-self: start;
+  justify-self: start;
+}
+
+.top_right {
+  align-self: start;
+  justify-self: end;
+}
+
+.bottom_left {
+  align-self: end;
+  justify-self: start;
+}
+
+.bottom_right {
+  align-self: end;
+  justify-self: end;
+}
+
+.center {
+  align-self: center;
+  justify-self: center;
+}
