@@ -13,9 +13,7 @@ function Clock() {
     return () => clearInterval(id)
   }, [])
 
-  return (
-    <span style={{ fontFamily: 'monospace', fontSize: 13 }}>{time}</span>
-  )
+  return <span style={{ fontFamily: 'monospace', fontSize: 13 }}>{time}</span>
 }
 
 function VersionBadge() {
