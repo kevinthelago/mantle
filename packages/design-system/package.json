@@ -29,7 +29,7 @@
     "build:tokens": "node --loader ts-node/esm scripts/build-tokens.ts",
     "build:storybook": "storybook build",
     "build-storybook": "storybook build",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit",

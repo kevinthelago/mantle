@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import dts from 'vite-plugin-dts'
 import { resolve } from 'path'
 
-const isStorybook = process.env['STORYBOOK'] === 'true'
+const isStorybook = process.argv.some((arg) => arg.includes('storybook'))
 
 export default defineConfig({
   plugins: [
