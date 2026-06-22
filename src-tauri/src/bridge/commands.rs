@@ -4,7 +4,7 @@ use tauri::{Emitter, State};
 use tauri_specta::{collect_commands, Builder};
 
 use crate::config::{
-    schema::{ClockConfig, Config, FocusedWindow, OutputConfig, PowerAction, WorkspaceState},
+    schema::{ClockConfig, Config, OutputConfig, PowerAction},
     ConfigState,
 };
 
@@ -128,27 +128,6 @@ pub async fn power_action(action: PowerAction) -> Result<(), BridgeError> {
         .map_err(|e| BridgeError::new("power-action", e.to_string()))
 }
 
-// ── Compositor stubs (replaced at merge by compositor stream) ─────────────────
-
-#[tauri::command]
-#[specta::specta]
-pub async fn get_workspace_state() -> Result<WorkspaceState, BridgeError> {
-    Ok(WorkspaceState::default())
-}
-
-#[tauri::command]
-#[specta::specta]
-pub async fn get_focused_window() -> Result<FocusedWindow, BridgeError> {
-    Ok(FocusedWindow::default())
-}
-
-#[tauri::command]
-#[specta::specta]
-pub async fn compositor_dispatch(command: String) -> Result<(), BridgeError> {
-    drop(command);
-    Ok(())
-}
-
 // ── Builder factory ───────────────────────────────────────────────────────────
 
 pub fn build_commands() -> Builder<tauri::Wry> {
@@ -163,9 +142,5 @@ pub fn build_commands() -> Builder<tauri::Wry> {
         reload_config,
         // Power
         power_action,
-        // Compositor stubs
-        get_workspace_state,
-        get_focused_window,
-        compositor_dispatch,
     ])
 }
