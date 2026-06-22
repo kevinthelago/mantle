@@ -1,246 +1,162 @@
-//! Layer-shell surface manager — Path A implementation.
+#![allow(dead_code)] // All items used on Linux only; silence non-Linux dead-code warnings.
+
+//! LayerShellManager — turns a GTK window into a wlr-layer-shell surface.
 //!
-//! Applies gtk-layer-shell to a Tauri WebviewWindow *before* it is shown.
-//! The window must be created with `visible: false` in tauri.conf.json so it
-//! does not realize as an xdg-toplevel before we claim it as a layer surface.
+//! Path A (preferred): Tauri creates the window with `visible: false`, then
+//! `apply_to_window` is called on the `gtk::ApplicationWindow` obtained via
+//! `WebviewWindow::gtk_window()` BEFORE `window.show()`.  The window must
+//! never realize as an xdg-toplevel first — hence `visible: false` in
+//! tauri.conf.json.
 //!
-//! # Decision record
-//! Path A (Tauri + gtk-layer-shell) was chosen over Path B (bare gtk-rs).
-//! Tauri's `WebviewWindow::gtk_window()` is available in the `setup` hook
-//! before `win.show()` is called, giving us the correct pre-map timing window.
-//! If Tauri's window lifecycle ever fights this assumption, fall back to Path B.
+//! Path B (fallback): drop Tauri for that surface; use gtk-rs + webkit2gtk +
+//! gtk-layer-shell directly.  Choose only if Tauri's window lifecycle fights
+//! the pre-map init in the spike (tracked in docs/adr/layer-shell.md).
 
-use serde::{Deserialize, Serialize};
-
-// ---------------------------------------------------------------------------
-// Platform-agnostic surface config types
-// ---------------------------------------------------------------------------
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum LayerHint {
+/// Which wlr-layer-shell layer to use.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Layer {
     Background,
     Bottom,
     Top,
     Overlay,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum AnchorEdge {
-    Top,
-    Bottom,
-    Left,
-    Right,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum KeyboardHint {
-    /// Bar surfaces — keyboard focus is never captured.
+/// How the surface handles keyboard events.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum KeyboardMode {
     None,
-    /// Launcher / popups — focus on demand.
     OnDemand,
-    /// Full-screen overlays — exclusive keyboard grab.
     Exclusive,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Margins {
-    pub top: i32,
-    pub bottom: i32,
-    pub left: i32,
-    pub right: i32,
+/// How the exclusive zone is determined.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum ExclusiveZone {
+    /// Reserve space automatically based on the surface size.
+    Auto,
+    /// Reserve exactly this many pixels.
+    Fixed(i32),
+    /// Do not reserve any space (overlapping surface).
+    None,
 }
 
-impl Default for Margins {
-    fn default() -> Self {
-        Self {
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-        }
-    }
-}
-
-/// Complete configuration for a single layer-shell surface.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+/// All parameters for a single layer-shell surface.
+#[derive(Debug, Clone)]
 pub struct SurfaceConfig {
-    /// wlr-layer-shell namespace (visible to compositor; use reverse-DNS style).
+    pub layer: Layer,
+    /// `[top, right, bottom, left]` — true = anchored to that edge.
+    pub anchors: [bool; 4],
+    pub exclusive_zone: ExclusiveZone,
+    /// Margin in pixels: `(top, right, bottom, left)`.
+    pub margins: (i32, i32, i32, i32),
+    pub keyboard_mode: KeyboardMode,
     pub namespace: String,
-    pub layer: LayerHint,
-    pub anchors: Vec<AnchorEdge>,
-    /// Exclusive zone in pixels. -1 = auto (computed from surface size).
-    pub exclusive_zone: i32,
-    pub margins: Margins,
-    pub keyboard_mode: KeyboardHint,
-    /// GDK monitor name to pin to. None = follow the first available output.
-    pub output: Option<String>,
 }
 
 impl SurfaceConfig {
-    /// Default config for the main bar: top-anchored, full-width, auto exclusive zone.
-    pub fn default_bar() -> Self {
+    /// Preset for a full-width top bar of the given pixel height.
+    pub fn top_bar(height: i32, namespace: impl Into<String>) -> Self {
         Self {
-            namespace: "mantle-bar".to_string(),
-            layer: LayerHint::Top,
-            anchors: vec![AnchorEdge::Top, AnchorEdge::Left, AnchorEdge::Right],
-            exclusive_zone: -1,
-            margins: Margins::default(),
-            keyboard_mode: KeyboardHint::None,
-            output: None,
+            layer: Layer::Top,
+            anchors: [true, true, false, true], // top, right, bottom=false, left
+            exclusive_zone: ExclusiveZone::Fixed(height),
+            margins: (0, 0, 0, 0),
+            keyboard_mode: KeyboardMode::None,
+            namespace: namespace.into(),
         }
     }
 }
 
-// ---------------------------------------------------------------------------
-// LayerShellManager
-// ---------------------------------------------------------------------------
+/// Information about a physical monitor.
+#[derive(Debug, Clone)]
+pub struct MonitorInfo {
+    pub index: u32,
+    /// Human-readable model name.
+    pub name: String,
+    /// Connector name as reported by the compositor (e.g. "DP-1").
+    pub connector: Option<String>,
+}
 
 pub struct LayerShellManager;
 
 impl LayerShellManager {
-    pub fn new() -> Self {
-        Self
-    }
-
-    /// Apply layer-shell properties to `win` and then show it.
+    /// Apply layer-shell properties to `win`.
     ///
-    /// Must be called from Tauri's `setup` hook before the window is visible.
-    /// On non-Linux platforms this is a no-op (returns Ok, window stays hidden).
-    pub fn apply(&self, win: &tauri::WebviewWindow, config: &SurfaceConfig) -> Result<(), String> {
-        #[cfg(target_os = "linux")]
-        return self.apply_linux(win, config);
-
-        #[cfg(not(target_os = "linux"))]
-        {
-            let _ = (win, config);
-            log::warn!("layer-shell is only supported on Linux; skipping apply()");
-            Ok(())
-        }
-    }
-
+    /// **Must be called before `win.show()`** — the window must not have
+    /// realized as an xdg-toplevel yet.
+    ///
+    /// On non-Linux platforms this is a compile-time no-op.
     #[cfg(target_os = "linux")]
-    fn apply_linux(
-        &self,
-        win: &tauri::WebviewWindow,
+    pub fn apply_to_window(
+        win: &gtk::ApplicationWindow,
         config: &SurfaceConfig,
-    ) -> Result<(), String> {
+        monitor: Option<&gdk::Monitor>,
+    ) {
         use gtk::prelude::*;
-        use gtk_layer_shell::Edge;
+        use gtk_layer_shell::{Edge, Layer as GtkLayer, KeyboardMode as GtkKb};
 
-        let gtk_win = win.gtk_window().map_err(|e| e.to_string())?;
+        gtk_layer_shell::init_for_window(win);
+        gtk_layer_shell::set_namespace(win, &config.namespace);
 
-        // --- Init layer shell (must happen before show) ---
-        gtk_layer_shell::init_for_window(&gtk_win);
-        gtk_layer_shell::set_namespace(&gtk_win, &config.namespace);
-        gtk_layer_shell::set_layer(&gtk_win, self.layer_hint_to_gtk(&config.layer));
+        gtk_layer_shell::set_layer(win, match config.layer {
+            Layer::Background => GtkLayer::Background,
+            Layer::Bottom     => GtkLayer::Bottom,
+            Layer::Top        => GtkLayer::Top,
+            Layer::Overlay    => GtkLayer::Overlay,
+        });
 
-        // --- Anchors ---
-        for edge in &config.anchors {
-            gtk_layer_shell::set_anchor(&gtk_win, self.edge_to_gtk(edge), true);
+        let edges = [Edge::Top, Edge::Right, Edge::Bottom, Edge::Left];
+        for (edge, &anchored) in edges.iter().zip(config.anchors.iter()) {
+            gtk_layer_shell::set_anchor(win, edge, anchored);
         }
 
-        // --- Exclusive zone ---
-        if config.exclusive_zone == -1 {
-            gtk_layer_shell::auto_exclusive_zone_enable(&gtk_win);
-        } else {
-            gtk_layer_shell::set_exclusive_zone(&gtk_win, config.exclusive_zone);
+        match config.exclusive_zone {
+            ExclusiveZone::Auto      => gtk_layer_shell::auto_exclusive_zone_enable(win),
+            ExclusiveZone::Fixed(px) => gtk_layer_shell::set_exclusive_zone(win, px),
+            ExclusiveZone::None      => gtk_layer_shell::set_exclusive_zone(win, 0),
         }
 
-        // --- Margins ---
-        gtk_layer_shell::set_margin(&gtk_win, Edge::Top, config.margins.top);
-        gtk_layer_shell::set_margin(&gtk_win, Edge::Bottom, config.margins.bottom);
-        gtk_layer_shell::set_margin(&gtk_win, Edge::Left, config.margins.left);
-        gtk_layer_shell::set_margin(&gtk_win, Edge::Right, config.margins.right);
+        let (mt, mr, mb, ml) = config.margins;
+        gtk_layer_shell::set_margin(win, Edge::Top, mt);
+        gtk_layer_shell::set_margin(win, Edge::Right, mr);
+        gtk_layer_shell::set_margin(win, Edge::Bottom, mb);
+        gtk_layer_shell::set_margin(win, Edge::Left, ml);
 
-        // --- Keyboard mode ---
-        gtk_layer_shell::set_keyboard_mode(
-            &gtk_win,
-            self.keyboard_hint_to_gtk(&config.keyboard_mode),
-        );
+        gtk_layer_shell::set_keyboard_mode(win, match config.keyboard_mode {
+            KeyboardMode::None      => GtkKb::None,
+            KeyboardMode::OnDemand  => GtkKb::OnDemand,
+            KeyboardMode::Exclusive => GtkKb::Exclusive,
+        });
 
-        // --- Output pin ---
-        if let Some(ref output_name) = config.output {
-            if let Some(display) = gdk::Display::default() {
-                let n = display.n_monitors();
-                for i in 0..n {
-                    if let Some(monitor) = display.monitor(i) {
-                        if monitor.model().as_deref() == Some(output_name.as_str()) {
-                            gtk_layer_shell::set_monitor(&gtk_win, &monitor);
-                            break;
-                        }
-                    }
-                }
+        if let Some(mon) = monitor {
+            gtk_layer_shell::set_monitor(win, mon);
+        }
+    }
+
+    /// Enumerate all connected GDK monitors.  Returns empty vec on non-Linux.
+    pub fn list_monitors() -> Vec<MonitorInfo> {
+        #[cfg(target_os = "linux")]
+        {
+            use gtk::prelude::*;
+            if gtk::init().is_err() {
+                return vec![];
             }
+            let display = match gdk::Display::default() {
+                Some(d) => d,
+                None => return vec![],
+            };
+            (0..display.n_monitors())
+                .filter_map(|i| display.monitor(i).map(|m| (i as u32, m)))
+                .map(|(idx, mon)| MonitorInfo {
+                    index: idx,
+                    name: mon.model()
+                        .map(|s| s.to_string())
+                        .unwrap_or_else(|| format!("monitor-{idx}")),
+                    connector: mon.connector().map(|s| s.to_string()),
+                })
+                .collect()
         }
-
-        // --- Show — at this point the surface is a layer surface, not xdg-toplevel ---
-        win.show().map_err(|e| e.to_string())?;
-
-        log::info!(
-            "layer-shell applied: namespace={} layer={:?}",
-            config.namespace,
-            config.layer,
-        );
-
-        Ok(())
-    }
-
-    #[cfg(target_os = "linux")]
-    fn layer_hint_to_gtk(&self, hint: &LayerHint) -> gtk_layer_shell::Layer {
-        use gtk_layer_shell::Layer;
-        match hint {
-            LayerHint::Background => Layer::Background,
-            LayerHint::Bottom => Layer::Bottom,
-            LayerHint::Top => Layer::Top,
-            LayerHint::Overlay => Layer::Overlay,
-        }
-    }
-
-    #[cfg(target_os = "linux")]
-    fn edge_to_gtk(&self, edge: &AnchorEdge) -> gtk_layer_shell::Edge {
-        use gtk_layer_shell::Edge;
-        match edge {
-            AnchorEdge::Top => Edge::Top,
-            AnchorEdge::Bottom => Edge::Bottom,
-            AnchorEdge::Left => Edge::Left,
-            AnchorEdge::Right => Edge::Right,
-        }
-    }
-
-    #[cfg(target_os = "linux")]
-    fn keyboard_hint_to_gtk(&self, hint: &KeyboardHint) -> gtk_layer_shell::KeyboardMode {
-        use gtk_layer_shell::KeyboardMode;
-        match hint {
-            KeyboardHint::None => KeyboardMode::None,
-            KeyboardHint::OnDemand => KeyboardMode::OnDemand,
-            KeyboardHint::Exclusive => KeyboardMode::Exclusive,
-        }
-    }
-
-    /// Enumerate GDK monitors and return their model names.
-    /// Use for multi-monitor setup and hotplug-driven output selection.
-    #[cfg(target_os = "linux")]
-    pub fn list_monitors(&self) -> Vec<String> {
-        use gtk::prelude::*;
-        let display = match gdk::Display::default() {
-            Some(d) => d,
-            None => return vec![],
-        };
-        (0..display.n_monitors())
-            .filter_map(|i| display.monitor(i))
-            .filter_map(|m| m.model())
-            .map(|s| s.to_string())
-            .collect()
-    }
-
-    #[cfg(not(target_os = "linux"))]
-    pub fn list_monitors(&self) -> Vec<String> {
-        vec![]
-    }
-}
-
-impl Default for LayerShellManager {
-    fn default() -> Self {
-        Self::new()
+        #[cfg(not(target_os = "linux"))]
+        { vec![] }
     }
 }

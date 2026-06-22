@@ -1,0 +1,69 @@
+/* ── Bar container ──────────────────────────────────────────────────────── */
+
+.bar-shell {
+  width: 100vw;
+  height: var(--bar-height, 36px);
+  display: flex;
+  align-items: stretch;
+  background-color: var(--bar-background, #1e1e2e);
+  color: var(--bar-foreground, #cdd6f4);
+  font-family: var(--bar-font, sans-serif);
+  font-size: var(--bar-font-size, 13px);
+  opacity: var(--bar-opacity, 0.95);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  /* Design-system tokens override CSS vars when the DS stream lands. */
+}
+
+.bar-shell--error {
+  color: #f38ba8;
+  padding: 0 12px;
+  align-items: center;
+}
+
+/* ── Regions ─────────────────────────────────────────────────────────────── */
+
+.bar-region {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px;
+  min-width: 0;
+}
+
+.bar-region--left {
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.bar-region--center {
+  flex-shrink: 0;
+  justify-content: center;
+}
+
+.bar-region--right {
+  flex: 1;
+  justify-content: flex-end;
+}
+
+/* ── Module slots ────────────────────────────────────────────────────────── */
+
+.bar-module {
+  display: flex;
+  align-items: center;
+  padding: var(--module-padding, 0 8px);
+  height: 100%;
+  white-space: nowrap;
+}
+
+.bar-module--loading {
+  width: 40px;
+  opacity: 0.3;
+}
+
+.bar-module--error {
+  color: #f38ba8;
+  font-size: 0.85em;
+  cursor: help;
+}

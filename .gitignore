@@ -1,26 +1,36 @@
-# Build outputs
-dist/
-target/
+# Rust / Cargo
+/src-tauri/target/
+/src-tauri/gen/
+
+# Node / frontend
 node_modules/
 
-# Tauri
-src-tauri/target/
-src-tauri/gen/
-
 # Vite
+dist/
+dist-ssr/
 *.local
 
-# Editor artifacts
+# Tauri
+.tauri/
+
+# Storybook
+storybook-static/
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
 .DS_Store
-*.swp
-*.swo
-.idea/
-.vscode/settings.json
+Thumbs.db
 
 # Environment
 .env
 .env.*
 !.env.example
-
-# Storybook
-storybook-static/

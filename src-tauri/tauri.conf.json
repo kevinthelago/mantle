@@ -2,30 +2,26 @@
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "mantle",
   "version": "0.1.0",
-  "identifier": "dev.mantle.app",
+  "identifier": "dev.mantle",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:1420",
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build"
   },
-  "bundle": {
-    "active": false,
-    "icon": []
-  },
   "app": {
-    "withGlobalTauri": false,
+    "withGlobalTauri": true,
     "windows": [
       {
         "label": "bar",
-        "title": "",
-        "visible": false,
+        "url": "index.html",
+        "width": 1920,
+        "height": 36,
         "decorations": false,
         "transparent": true,
-        "width": 1920,
-        "height": 32,
+        "visible": false,
         "resizable": false,
-        "alwaysOnTop": false,
+        "alwaysOnTop": true,
         "skipTaskbar": true
       },
       {
@@ -56,5 +52,10 @@
     "security": {
       "csp": null
     }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": []
   }
 }

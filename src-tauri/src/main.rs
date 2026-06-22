@@ -1,6 +1,6 @@
-// Prevents console window from opening on Windows in release builds.
+// Prevents an additional console window on Windows in release.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    mantle_lib::run();
+    mantle_lib::run()
 }
