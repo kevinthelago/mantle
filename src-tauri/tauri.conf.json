@@ -39,18 +39,6 @@
         "resizable": false,
         "alwaysOnTop": true,
         "skipTaskbar": true
-      },
-      {
-        "label": "launcher",
-        "title": "",
-        "visible": false,
-        "decorations": false,
-        "transparent": true,
-        "width": 640,
-        "height": 480,
-        "resizable": false,
-        "alwaysOnTop": true,
-        "skipTaskbar": true
       }
     ],
     "security": {

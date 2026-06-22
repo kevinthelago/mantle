@@ -1,9 +1,0 @@
-.list {
-  margin: 0;
-  padding: var(--space-1, 0.25rem);
-  overflow-y: auto;
-  max-height: calc(var(--result-rows, 8) * var(--result-row-height, 3rem));
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: var(--surface-3, #45475a) transparent;
-}
