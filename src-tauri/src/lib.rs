@@ -6,6 +6,7 @@ pub mod launcher;
 mod notifications;
 mod registry;
 mod services;
+mod tray;
 
 use config::{loader, watcher, ConfigState};
 use tauri::Emitter;

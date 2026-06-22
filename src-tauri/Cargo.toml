@@ -60,6 +60,8 @@ image = { version = "0.25", default-features = false, features = ["png", "jpeg"]
 base64 = "0.22"
 # XDG desktop entry parsing (gettext-sys requires GNU gettext; Linux only)
 freedesktop-desktop-entry = "0.5"
+futures-util = "0.3"
+pipewire = "0.8"
 
 [dev-dependencies]
 tempfile = "3"
