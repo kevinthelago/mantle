@@ -8,40 +8,40 @@
  * against the planned interface. At merge, the registry import will resolve
  * to bar-shell's exported module.
  */
-import { useEffect } from "react";
-import { useNotificationStore } from "./store";
-import styles from "./NotificationIndicator.module.css";
+import { useEffect } from 'react'
+import { useNotificationStore } from './store'
+import styles from './NotificationIndicator.module.css'
 
 // ── widget component ──────────────────────────────────────────────────────────
 
 export function NotificationIndicator() {
-  const active = useNotificationStore((s) => s.active);
-  const dndEnabled = useNotificationStore((s) => s.dndEnabled);
-  const toggleCenter = useNotificationStore((s) => s.toggleCenter);
+  const active = useNotificationStore((s) => s.active)
+  const dndEnabled = useNotificationStore((s) => s.dndEnabled)
+  const toggleCenter = useNotificationStore((s) => s.toggleCenter)
 
-  const unread = active.length;
+  const unread = active.length
 
   return (
     <button
-      className={`${styles.indicator} ${dndEnabled ? styles.dnd : ""}`}
+      className={`${styles.indicator} ${dndEnabled ? styles.dnd : ''}`}
       onClick={toggleCenter}
       aria-label={
         dndEnabled
-          ? "Notifications (Do Not Disturb)"
-          : `Notifications${unread > 0 ? ` (${unread} new)` : ""}`
+          ? 'Notifications (Do Not Disturb)'
+          : `Notifications${unread > 0 ? ` (${unread} new)` : ''}`
       }
-      title={dndEnabled ? "DND enabled" : undefined}
+      title={dndEnabled ? 'DND enabled' : undefined}
     >
       <span className={styles.icon} aria-hidden="true">
-        {dndEnabled ? "🔕" : "🔔"}
+        {dndEnabled ? '🔕' : '🔔'}
       </span>
       {unread > 0 && !dndEnabled && (
         <span className={styles.badge} aria-hidden="true">
-          {unread > 9 ? "9+" : unread}
+          {unread > 9 ? '9+' : unread}
         </span>
       )}
     </button>
-  );
+  )
 }
 
 // ── self-registration with bar registry ───────────────────────────────────────
@@ -54,41 +54,45 @@ export function NotificationIndicator() {
  * initialisation between streams doesn't matter.
  */
 export function registerNotificationIndicator(): () => void {
-  let cancelled = false;
+  let cancelled = false
 
   function tryRegister() {
-    if (cancelled) return;
+    if (cancelled) return
     // Bar-shell contract: window.__mantleBarRegistry or the ES module export.
-    const registry =
-      (window as unknown as Record<string, unknown>).__mantleBarRegistry as
-        | { register: (id: string, component: unknown, opts: { position: number; slot: string }) => () => void }
-        | undefined;
+    const registry = (window as unknown as Record<string, unknown>).__mantleBarRegistry as
+      | {
+          register: (
+            id: string,
+            component: unknown,
+            opts: { position: number; slot: string },
+          ) => () => void
+        }
+      | undefined
 
     if (registry) {
-      const unregister = registry.register(
-        "notifications.indicator",
-        NotificationIndicator,
-        { position: 100, slot: "trailing" }
-      );
-      return unregister;
+      const unregister = registry.register('notifications.indicator', NotificationIndicator, {
+        position: 100,
+        slot: 'trailing',
+      })
+      return unregister
     }
 
     // Registry not yet available — retry after a tick.
-    const t = setTimeout(tryRegister, 50);
-    return () => clearTimeout(t);
+    const t = setTimeout(tryRegister, 50)
+    return () => clearTimeout(t)
   }
 
-  const cleanup = tryRegister();
+  const cleanup = tryRegister()
   return () => {
-    cancelled = true;
-    cleanup?.();
-  };
+    cancelled = true
+    cleanup?.()
+  }
 }
 
 // ── hook for use inside the bar-shell render tree ─────────────────────────────
 
 export function useNotificationIndicatorRegistration() {
   useEffect(() => {
-    return registerNotificationIndicator();
-  }, []);
+    return registerNotificationIndicator()
+  }, [])
 }

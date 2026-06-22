@@ -93,42 +93,49 @@ impl LayerShellManager {
         monitor: Option<&gdk::Monitor>,
     ) {
         use gtk::prelude::*;
-        use gtk_layer_shell::{Edge, KeyboardMode as GtkKb, Layer as GtkLayer, LayerShell};
+        use gtk_layer_shell::{Edge, KeyboardMode as GtkKb, Layer as GtkLayer};
 
-        win.init_layer_shell();
-        win.set_namespace(&config.namespace);
-        win.set_layer(match config.layer {
-            Layer::Background => GtkLayer::Background,
-            Layer::Bottom => GtkLayer::Bottom,
-            Layer::Top => GtkLayer::Top,
-            Layer::Overlay => GtkLayer::Overlay,
-        });
+        gtk_layer_shell::init_for_window(win);
+        gtk_layer_shell::set_namespace(win, &config.namespace);
+
+        gtk_layer_shell::set_layer(
+            win,
+            match config.layer {
+                Layer::Background => GtkLayer::Background,
+                Layer::Bottom => GtkLayer::Bottom,
+                Layer::Top => GtkLayer::Top,
+                Layer::Overlay => GtkLayer::Overlay,
+            },
+        );
 
         let edges = [Edge::Top, Edge::Right, Edge::Bottom, Edge::Left];
         for (edge, &anchored) in edges.iter().zip(config.anchors.iter()) {
-            win.set_anchor(edge, anchored);
+            gtk_layer_shell::set_anchor(win, edge, anchored);
         }
 
         match config.exclusive_zone {
-            ExclusiveZone::Auto => win.auto_exclusive_zone_enable(),
-            ExclusiveZone::Fixed(px) => win.set_exclusive_zone(px),
-            ExclusiveZone::None => win.set_exclusive_zone(0),
+            ExclusiveZone::Auto => gtk_layer_shell::auto_exclusive_zone_enable(win),
+            ExclusiveZone::Fixed(px) => gtk_layer_shell::set_exclusive_zone(win, px),
+            ExclusiveZone::None => gtk_layer_shell::set_exclusive_zone(win, 0),
         }
 
         let (mt, mr, mb, ml) = config.margins;
-        win.set_layer_shell_margin(Edge::Top, mt);
-        win.set_layer_shell_margin(Edge::Right, mr);
-        win.set_layer_shell_margin(Edge::Bottom, mb);
-        win.set_layer_shell_margin(Edge::Left, ml);
+        gtk_layer_shell::set_margin(win, Edge::Top, mt);
+        gtk_layer_shell::set_margin(win, Edge::Right, mr);
+        gtk_layer_shell::set_margin(win, Edge::Bottom, mb);
+        gtk_layer_shell::set_margin(win, Edge::Left, ml);
 
-        win.set_keyboard_mode(match config.keyboard_mode {
-            KeyboardMode::None => GtkKb::None,
-            KeyboardMode::OnDemand => GtkKb::OnDemand,
-            KeyboardMode::Exclusive => GtkKb::Exclusive,
-        });
+        gtk_layer_shell::set_keyboard_mode(
+            win,
+            match config.keyboard_mode {
+                KeyboardMode::None => GtkKb::None,
+                KeyboardMode::OnDemand => GtkKb::OnDemand,
+                KeyboardMode::Exclusive => GtkKb::Exclusive,
+            },
+        );
 
         if let Some(mon) = monitor {
-            win.set_monitor(mon);
+            gtk_layer_shell::set_monitor(win, mon);
         }
     }
 

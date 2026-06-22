@@ -1,1 +1,1 @@
-export { default } from "./WindowTitle";
+export { default } from './WindowTitle'

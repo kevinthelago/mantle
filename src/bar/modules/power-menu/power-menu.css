@@ -19,7 +19,7 @@
   background: color-mix(in srgb, var(--bar-foreground, #cdd6f4) 12%, transparent);
 }
 
-.power-menu__trigger[aria-expanded="true"] {
+.power-menu__trigger[aria-expanded='true'] {
   background: color-mix(in srgb, var(--bar-foreground, #cdd6f4) 18%, transparent);
 }
 

@@ -1,24 +1,24 @@
-import { Component, type ReactNode, type ErrorInfo } from "react";
+import { Component, type ReactNode, type ErrorInfo } from 'react'
 
 interface Props {
-  moduleName: string;
-  children: ReactNode;
+  moduleName: string
+  children: ReactNode
 }
 
 interface State {
-  error: Error | null;
+  error: Error | null
 }
 
 /** Per-slot error boundary — a crashed module doesn't take down the whole bar. */
 export class ErrorBoundary extends Component<Props, State> {
-  state: State = { error: null };
+  state: State = { error: null }
 
   static getDerivedStateFromError(error: Error): State {
-    return { error };
+    return { error }
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error(`[mantle] module '${this.props.moduleName}' crashed:`, error, info);
+    console.error(`[mantle] module '${this.props.moduleName}' crashed:`, error, info)
   }
 
   render() {
@@ -31,8 +31,8 @@ export class ErrorBoundary extends Component<Props, State> {
         >
           ⚠ {this.props.moduleName}
         </span>
-      );
+      )
     }
-    return this.props.children;
+    return this.props.children
   }
 }

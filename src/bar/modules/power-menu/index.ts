@@ -1,1 +1,1 @@
-export { default } from "./PowerMenu";
+export { default } from './PowerMenu'
