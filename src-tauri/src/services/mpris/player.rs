@@ -96,3 +96,54 @@ pub fn extract_i64(meta: &HashMap<String, OwnedValue>, key: &str) -> Option<i64>
         _ => None,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use zbus::zvariant::{OwnedValue, Value};
+
+    fn str_entry(key: &str, val: &str) -> (String, OwnedValue) {
+        (
+            key.to_string(),
+            OwnedValue::try_from(Value::from(val)).unwrap(),
+        )
+    }
+
+    fn i64_entry(key: &str, val: i64) -> (String, OwnedValue) {
+        (
+            key.to_string(),
+            OwnedValue::try_from(Value::from(val)).unwrap(),
+        )
+    }
+
+    #[test]
+    fn extract_string_gets_a_plain_string() {
+        let meta: HashMap<String, OwnedValue> = [str_entry("xesam:title", "Test Song")]
+            .into_iter()
+            .collect();
+        assert_eq!(
+            extract_string(&meta, "xesam:title"),
+            Some("Test Song".to_string())
+        );
+    }
+
+    #[test]
+    fn extract_string_returns_none_for_missing_key() {
+        let meta: HashMap<String, OwnedValue> = HashMap::new();
+        assert_eq!(extract_string(&meta, "xesam:title"), None);
+    }
+
+    #[test]
+    fn extract_i64_gets_an_integer() {
+        let meta: HashMap<String, OwnedValue> = [i64_entry("mpris:length", 240_000_000i64)]
+            .into_iter()
+            .collect();
+        assert_eq!(extract_i64(&meta, "mpris:length"), Some(240_000_000i64));
+    }
+
+    #[test]
+    fn extract_i64_returns_none_for_missing_key() {
+        let meta: HashMap<String, OwnedValue> = HashMap::new();
+        assert_eq!(extract_i64(&meta, "mpris:length"), None);
+    }
+}

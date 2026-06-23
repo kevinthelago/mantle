@@ -249,3 +249,21 @@ inventory::submit! {
         build: || init::<tauri::Wry>(),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn playback_status_parses_known_values() {
+        assert_eq!(PlaybackStatus::from_str("Playing"), PlaybackStatus::Playing);
+        assert_eq!(PlaybackStatus::from_str("Paused"), PlaybackStatus::Paused);
+        assert_eq!(PlaybackStatus::from_str("Stopped"), PlaybackStatus::Stopped);
+    }
+
+    #[test]
+    fn playback_status_unknown_string_becomes_stopped() {
+        assert_eq!(PlaybackStatus::from_str("unknown"), PlaybackStatus::Stopped);
+        assert_eq!(PlaybackStatus::from_str(""), PlaybackStatus::Stopped);
+    }
+}

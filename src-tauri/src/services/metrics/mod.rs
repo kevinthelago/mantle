@@ -112,3 +112,24 @@ inventory::submit! {
         build: || init::<tauri::Wry>(),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn sample_returns_sane_ranges() {
+        let svc = MetricsService::new();
+        // First call initialises CPU counters; result may be 0 on the first read.
+        let _ = svc.sample().await;
+        let m = svc.sample().await;
+
+        assert!(m.cpu_percent >= 0.0, "cpu_percent must be non-negative");
+        assert!(m.memory_total_mb > 0, "must have non-zero total memory");
+        assert!(m.memory_used_mb <= m.memory_total_mb, "used <= total");
+        assert!(
+            m.memory_percent >= 0.0 && m.memory_percent <= 100.0,
+            "memory_percent in 0–100"
+        );
+    }
+}

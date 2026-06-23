@@ -68,3 +68,32 @@ inventory::submit! {
         build: || init::<tauri::Wry>(),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_config_has_three_widgets() {
+        let cfg = WidgetLayerConfig::default();
+        assert_eq!(cfg.widgets.len(), 3);
+        assert_eq!(cfg.widgets[0].id, "calendar");
+        assert_eq!(cfg.widgets[1].id, "system-monitor");
+        assert_eq!(cfg.widgets[2].id, "media-controls");
+    }
+
+    #[test]
+    fn all_default_widgets_are_visible() {
+        assert!(WidgetLayerConfig::default()
+            .widgets
+            .iter()
+            .all(|w| w.visible));
+    }
+
+    #[test]
+    fn default_anchors_are_set() {
+        let cfg = WidgetLayerConfig::default();
+        assert_eq!(cfg.widgets[0].anchor, "top-right");
+        assert_eq!(cfg.widgets[2].anchor, "bottom-right");
+    }
+}
