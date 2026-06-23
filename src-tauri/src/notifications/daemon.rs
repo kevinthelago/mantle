@@ -437,3 +437,47 @@ fn unix_now() -> u64 {
 
 // OwnedValue derefs to Value<'_> in zbus 4.
 use std::ops::Deref;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn resolve_timeout_zero_means_persistent() {
+        assert_eq!(resolve_timeout(0, Urgency::Normal), None);
+        assert_eq!(resolve_timeout(0, Urgency::Critical), None);
+    }
+
+    #[test]
+    fn resolve_timeout_negative_one_uses_urgency_defaults() {
+        assert_eq!(resolve_timeout(-1, Urgency::Critical), None);
+        assert_eq!(
+            resolve_timeout(-1, Urgency::Normal),
+            Some(DEFAULT_TIMEOUT_NORMAL_MS),
+        );
+        assert_eq!(
+            resolve_timeout(-1, Urgency::Low),
+            Some(DEFAULT_TIMEOUT_LOW_MS),
+        );
+    }
+
+    #[test]
+    fn resolve_timeout_positive_value_is_passed_through() {
+        assert_eq!(resolve_timeout(3000, Urgency::Normal), Some(3000));
+        assert_eq!(resolve_timeout(1, Urgency::Critical), Some(1));
+    }
+
+    #[test]
+    fn resolve_timeout_negative_other_falls_back_to_normal() {
+        // Any negative value other than -1 (spec violation) → normal default.
+        assert_eq!(
+            resolve_timeout(-5, Urgency::Low),
+            Some(DEFAULT_TIMEOUT_NORMAL_MS),
+        );
+    }
+
+    #[test]
+    fn unix_now_is_nonzero() {
+        assert!(unix_now() > 0);
+    }
+}
