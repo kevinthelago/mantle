@@ -8,3 +8,4 @@ src/lib/bridge/bindings.ts
 Cargo.lock
 .github/
 .claude/
+CLAUDE.local.md

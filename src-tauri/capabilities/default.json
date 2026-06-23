@@ -3,8 +3,5 @@
   "identifier": "default",
   "description": "Default capability for the Mantle bar",
   "windows": ["bar", "bar-*", "widgets"],
-  "permissions": [
-    "core:default",
-    "shell:default"
-  ]
+  "permissions": ["core:default", "shell:default"]
 }

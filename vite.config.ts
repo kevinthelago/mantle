@@ -1,8 +1,8 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
 // Tauri dev host is set when running `npm run tauri dev`
-const host = process.env.TAURI_DEV_HOST;
+const host = process.env.TAURI_DEV_HOST
 
 export default defineConfig({
   plugins: [react()],
@@ -11,15 +11,13 @@ export default defineConfig({
     port: 1420,
     strictPort: true,
     host: host ?? false,
-    hmr: host
-      ? { protocol: "ws", host, port: 1421 }
-      : undefined,
+    hmr: host ? { protocol: 'ws', host, port: 1421 } : undefined,
     watch: {
       // Prevent Vite from watching the Rust sources.
-      ignored: ["**/src-tauri/**"],
+      ignored: ['**/src-tauri/**'],
     },
   },
   build: {
-    target: "esnext",
+    target: 'esnext',
   },
-});
+})
