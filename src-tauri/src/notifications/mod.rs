@@ -60,28 +60,25 @@ pub fn plugin_init() -> tauri::plugin::TauriPlugin<tauri::Wry> {
             // so toast popups float above all other surfaces.
             #[cfg(target_os = "linux")]
             {
-                use crate::layer_shell::manager::{AnchorEdge, KeyboardHint, LayerHint, Margins};
-                use crate::layer_shell::{LayerShellManager, SurfaceConfig};
+                use crate::layer_shell::{
+                    ExclusiveZone, KeyboardMode, Layer, LayerShellManager, SurfaceConfig,
+                };
                 use tauri::Manager;
 
                 if let Some(win) = app.get_webview_window("notifications") {
+                    let gtk_win = win
+                        .gtk_window()
+                        .expect("failed to get GTK window for notifications");
                     let cfg = SurfaceConfig {
                         namespace: "mantle-notifications".to_string(),
-                        layer: LayerHint::Overlay,
-                        anchors: vec![AnchorEdge::Top, AnchorEdge::Right],
-                        exclusive_zone: 0,
-                        margins: Margins {
-                            top: 40,
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                        },
-                        keyboard_mode: KeyboardHint::None,
-                        output: None,
+                        layer: Layer::Overlay,
+                        anchors: [true, true, false, false], // top, right
+                        exclusive_zone: ExclusiveZone::None,
+                        margins: (40, 0, 0, 0), // 40 px top margin (clears the bar)
+                        keyboard_mode: KeyboardMode::None,
                     };
-                    if let Err(e) = LayerShellManager::new().apply(&win, &cfg) {
-                        log::warn!("Failed to apply layer-shell to notifications window: {e}");
-                    }
+                    LayerShellManager::apply_to_window(&gtk_win, &cfg, None);
+                    win.show().expect("failed to show notifications window");
                 } else {
                     log::warn!("notifications window not found in tauri.conf.json");
                 }
