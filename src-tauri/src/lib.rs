@@ -42,7 +42,10 @@ async fn load_styling(
     version: String,
     input: String,
 ) -> Result<styling::LoadResult, String> {
-    state.load(&tool, &version, &input).await.map_err(|e| e.to_string())
+    state
+        .load(&tool, &version, &input)
+        .await
+        .map_err(|e| e.to_string())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

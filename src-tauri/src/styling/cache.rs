@@ -49,17 +49,10 @@ pub fn extract_tarball(tarball: &[u8], dest: &Path) -> Result<(), StyleError> {
         let raw = entry.path()?.into_owned();
 
         // Strip the mandatory "package/" npm prefix.
-        let rel = raw
-            .strip_prefix("package")
-            .unwrap_or(&raw)
-            .to_path_buf();
+        let rel = raw.strip_prefix("package").unwrap_or(&raw).to_path_buf();
 
         // Reject traversal and absolute paths.
-        if rel.is_absolute()
-            || rel
-                .components()
-                .any(|c| c == Component::ParentDir)
-        {
+        if rel.is_absolute() || rel.components().any(|c| c == Component::ParentDir) {
             continue;
         }
 

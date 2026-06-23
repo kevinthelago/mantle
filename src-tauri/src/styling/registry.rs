@@ -36,10 +36,7 @@ pub async fn fetch_tarball(
         .await?;
 
     let integrity = doc.dist.integrity.ok_or_else(|| {
-        StyleError::UnsupportedIntegrity(format!(
-            "no integrity field for {}@{}",
-            pkg, version
-        ))
+        StyleError::UnsupportedIntegrity(format!("no integrity field for {}@{}", pkg, version))
     })?;
 
     let bytes = client

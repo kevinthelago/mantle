@@ -233,13 +233,15 @@ pub fn init<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
             mpris_next,
             mpris_prev,
         ])
-        .setup(|app: &AppHandle<R>, _api| -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-            let service = MprisService::new();
-            app.manage(service.clone());
-            let handle = app.clone();
-            tauri::async_runtime::spawn(watch_mpris(handle, service));
-            Ok(())
-        })
+        .setup(
+            |app: &AppHandle<R>, _api| -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+                let service = MprisService::new();
+                app.manage(service.clone());
+                let handle = app.clone();
+                tauri::async_runtime::spawn(watch_mpris(handle, service));
+                Ok(())
+            },
+        )
         .build()
 }
 

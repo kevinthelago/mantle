@@ -61,10 +61,7 @@ fn resolve_binary(tool: &str, tool_dir: &Path) -> Result<Binary, StyleError> {
         "sass-embedded" => {
             // Prefer the embedded Dart VM + snapshot (no node needed).
             let dart = dart_vm_path(tool_dir);
-            let snapshot = tool_dir
-                .join("dart-sass")
-                .join("src")
-                .join("sass.snapshot");
+            let snapshot = tool_dir.join("dart-sass").join("src").join("sass.snapshot");
             if dart.exists() && snapshot.exists() {
                 return Ok(Binary::DartSnapshot { dart, snapshot });
             }
