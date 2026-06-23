@@ -26,7 +26,7 @@ use pipewire::spa::utils::Id;
 use pipewire::types::ObjectType;
 use serde::{Deserialize, Serialize};
 use specta::Type;
-use tauri::{AppHandle, Manager, State};
+use tauri::{AppHandle, Emitter, Manager, State};
 
 pub fn plugin_init() -> tauri::plugin::TauriPlugin<tauri::Wry> {
     tauri::plugin::Builder::new("audio")

@@ -10,7 +10,7 @@ use std::sync::Arc;
 
 use serde::{Deserialize, Serialize};
 use specta::Type;
-use tauri::{AppHandle, Manager, State};
+use tauri::{AppHandle, Emitter, Manager, State};
 use tokio::sync::Mutex;
 use zbus::Connection;
 
