@@ -182,7 +182,7 @@ fn parse_item(layout: &LayoutTuple) -> MenuItem {
 /// Each child in `av` is a D-Bus struct `(i32, a{sv}, av)` boxed as a Variant.
 fn parse_child_value(v: &OwnedValue) -> Option<MenuItem> {
     // Dereference through OwnedValue → Value and extract the inner structure.
-    let inner: &Value = v.as_ref();
+    let inner: &Value = &**v;
     let s = match inner {
         Value::Structure(s) => s,
         _ => return None,
@@ -232,22 +232,28 @@ fn parse_child_value(v: &OwnedValue) -> Option<MenuItem> {
 // ── Property helpers ──────────────────────────────────────────────────────────
 
 fn str_prop(props: &PropMap, key: &str) -> Option<String> {
-    match props.get(key)?.as_ref() {
+    let ov = props.get(key)?;
+    let inner: &Value = &**ov;
+    match inner {
         Value::Str(s) => Some(s.to_string()),
         _ => None,
     }
 }
 
 fn bool_prop(props: &PropMap, key: &str) -> Option<bool> {
-    match props.get(key)?.as_ref() {
-        Value::Bool(b) => Some(*b),
+    let ov = props.get(key)?;
+    let inner: &Value = &**ov;
+    match inner {
+        Value::Bool(b) => Some(b),
         _ => None,
     }
 }
 
 fn i32_prop(props: &PropMap, key: &str) -> Option<i32> {
-    match props.get(key)?.as_ref() {
-        Value::I32(n) => Some(*n),
+    let ov = props.get(key)?;
+    let inner: &Value = &**ov;
+    match inner {
+        Value::I32(n) => Some(n),
         _ => None,
     }
 }

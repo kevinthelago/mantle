@@ -2,7 +2,7 @@
 
 #[cfg(target_os = "linux")]
 mod inner {
-    use super::super::super::config::PowerAction;
+    use crate::config::schema::PowerAction;
     use zbus::{proxy, Connection, Result as ZResult};
 
     #[proxy(

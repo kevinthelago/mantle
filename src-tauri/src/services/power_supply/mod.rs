@@ -3,7 +3,7 @@ use std::sync::Arc;
 use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
 use specta::Type;
-use tauri::{AppHandle, Manager, State};
+use tauri::{AppHandle, Emitter, Manager, State};
 use tokio::sync::Mutex;
 use zbus::{proxy, Connection};
 

@@ -199,7 +199,7 @@ pub async fn mpris_prev(service: State<'_, MprisService>) -> Result<(), String> 
 // Background watcher — emits mpris:state-changed to the frontend.
 // ---------------------------------------------------------------------------
 
-async fn watch_mpris(app: AppHandle, service: MprisService) {
+async fn watch_mpris<R: tauri::Runtime>(app: AppHandle<R>, service: MprisService) {
     let mut last_state: Option<PlayerState> = None;
     let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(2));
     loop {
@@ -233,7 +233,7 @@ pub fn init<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
             mpris_next,
             mpris_prev,
         ])
-        .setup(|app, _api| {
+        .setup(|app: &AppHandle<R>, _api| -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             let service = MprisService::new();
             app.manage(service.clone());
             let handle = app.clone();

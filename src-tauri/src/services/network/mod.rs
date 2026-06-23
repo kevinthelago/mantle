@@ -3,7 +3,7 @@ use std::sync::Arc;
 use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
 use specta::Type;
-use tauri::{AppHandle, Manager, State};
+use tauri::{AppHandle, Emitter, Manager, State};
 use tokio::sync::Mutex;
 use zbus::{proxy, Connection};
 
@@ -129,8 +129,6 @@ trait NetworkManager {
     fn connectivity(&self) -> zbus::Result<u32>;
     #[zbus(property)]
     fn primary_connection(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
-    #[zbus(signal)]
-    fn state_changed(&self, state: u32) -> zbus::Result<()>;
 }
 
 #[proxy(
@@ -338,7 +336,7 @@ async fn run_network_loop(
     }
     app.emit("network_update", &initial).ok();
 
-    let mut state_stream = nm.receive_state_changed().await?;
+    let mut state_stream = nm.receive_state_changed().await;
     let mut primary_stream = nm.receive_primary_connection_changed().await;
 
     loop {
