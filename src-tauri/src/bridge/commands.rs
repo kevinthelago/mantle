@@ -215,5 +215,7 @@ pub fn build_commands() -> Builder<tauri::Wry> {
         get_workspace_state,
         get_focused_window,
         compositor_dispatch,
+        // Styling loader
+        crate::load_styling
     ])
 }

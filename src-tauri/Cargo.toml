@@ -50,6 +50,14 @@ sled = "0.34"
 shellexpand = "3"
 which = "6"
 
+
+base64   = "0.22"
+# Styling-loader: runtime npm tool fetch, verify, cache, and compile
+reqwest  = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+sha2     = "0.10"
+hex      = "0.4"
+flate2   = "1"
+tar      = "0.4"
 [target.'cfg(target_os = "linux")'.dependencies]
 gtk = { version = "0.18", features = ["v3_24"] }
 gdk = "0.18"
