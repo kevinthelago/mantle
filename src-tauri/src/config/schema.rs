@@ -288,3 +288,100 @@ pub enum NotificationPosition {
     TopCenter,
     BottomCenter,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_config_has_expected_values() {
+        let cfg = Config::default();
+        assert_eq!(cfg.clock.format, "%H:%M");
+        assert_eq!(cfg.clock.interval, 1000);
+        assert_eq!(cfg.clock.timezone, None);
+        assert_eq!(cfg.outputs.len(), 1);
+        assert_eq!(cfg.outputs[0].name, "*");
+        assert_eq!(cfg.outputs[0].height, 36);
+        assert!(cfg.outputs[0].exclusive);
+        assert!(cfg.workspaces.show_names);
+        assert!(!cfg.workspaces.show_empty);
+    }
+
+    #[test]
+    fn config_toml_round_trips() {
+        let original = Config::default();
+        let toml_str = toml::to_string_pretty(&original).unwrap();
+        let parsed: Config = toml::from_str(&toml_str).unwrap();
+        assert_eq!(parsed.clock.format, original.clock.format);
+        assert_eq!(parsed.clock.interval, original.clock.interval);
+        assert_eq!(parsed.outputs.len(), original.outputs.len());
+        assert_eq!(parsed.outputs[0].name, original.outputs[0].name);
+        assert_eq!(parsed.outputs[0].height, original.outputs[0].height);
+        assert_eq!(parsed.general.gap, original.general.gap);
+    }
+
+    #[test]
+    fn output_config_resolve_exact_match_wins() {
+        let wildcard = OutputConfig {
+            name: "*".into(),
+            height: 36,
+            ..OutputConfig::default()
+        };
+        let specific = OutputConfig {
+            name: "DP-1".into(),
+            height: 50,
+            ..OutputConfig::default()
+        };
+        let configs = vec![wildcard, specific];
+        assert_eq!(OutputConfig::resolve(&configs, "DP-1").height, 50);
+        assert_eq!(OutputConfig::resolve(&configs, "HDMI-A-1").height, 36);
+    }
+
+    #[test]
+    fn output_config_resolve_first_entry_fallback() {
+        let only = OutputConfig {
+            name: "eDP-1".into(),
+            height: 32,
+            ..OutputConfig::default()
+        };
+        let configs = vec![only];
+        assert_eq!(OutputConfig::resolve(&configs, "DP-1").height, 32);
+    }
+
+    #[test]
+    fn power_action_json_roundtrip() {
+        let actions = [
+            PowerAction::Lock,
+            PowerAction::Logout,
+            PowerAction::Suspend,
+            PowerAction::Hibernate,
+            PowerAction::HybridSleep,
+            PowerAction::Reboot,
+            PowerAction::Poweroff,
+        ];
+        for action in &actions {
+            let json = serde_json::to_string(action).unwrap();
+            let back: PowerAction = serde_json::from_str(&json).unwrap();
+            assert_eq!(&back, action);
+        }
+    }
+
+    #[test]
+    fn power_menu_default_actions_are_sensible() {
+        let cfg = PowerMenuConfig::default();
+        assert!(cfg.actions.contains(&PowerAction::Reboot));
+        assert!(cfg.actions.contains(&PowerAction::Poweroff));
+        assert!(cfg.actions.contains(&PowerAction::Lock));
+        assert!(!cfg.actions.contains(&PowerAction::HybridSleep));
+    }
+
+    #[test]
+    fn notification_position_kebab_case_serde() {
+        let pos = NotificationPosition::TopRight;
+        let s = serde_json::to_string(&pos).unwrap();
+        assert_eq!(s, r#""top-right""#);
+        let back: NotificationPosition =
+            serde_json::from_str(r#""bottom-left""#).unwrap();
+        assert!(matches!(back, NotificationPosition::BottomLeft));
+    }
+}

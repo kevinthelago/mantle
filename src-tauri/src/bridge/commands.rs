@@ -87,11 +87,15 @@ pub async fn clock_tick(state: State<'_, ConfigState>) -> Result<String, BridgeE
 }
 
 fn format_time(fmt: &str) -> String {
-    let now = std::time::SystemTime::now()
+    let utc_secs = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap_or_default()
         .as_secs();
-    let secs = now % 86400;
+    format_time_at(fmt, utc_secs)
+}
+
+fn format_time_at(fmt: &str, utc_secs: u64) -> String {
+    let secs = utc_secs % 86400;
     let h = secs / 3600;
     let m = (secs % 3600) / 60;
     let s = secs % 60;
@@ -103,6 +107,50 @@ fn format_time(fmt: &str) -> String {
             &format!("{:02}", if h % 12 == 0 { 12 } else { h % 12 }),
         )
         .replace("%p", if h < 12 { "AM" } else { "PM" })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // 14:30:00 UTC = 52 200 seconds into the day.
+    const SAMPLE: u64 = 14 * 3600 + 30 * 60;
+
+    #[test]
+    fn format_24h_hm() {
+        assert_eq!(format_time_at("%H:%M", SAMPLE), "14:30");
+    }
+
+    #[test]
+    fn format_24h_hms() {
+        assert_eq!(format_time_at("%H:%M:%S", SAMPLE), "14:30:00");
+    }
+
+    #[test]
+    fn format_12h_pm() {
+        assert_eq!(format_time_at("%I:%M %p", SAMPLE), "02:30 PM");
+    }
+
+    #[test]
+    fn format_midnight_12h() {
+        assert_eq!(format_time_at("%I:%M %p", 0), "12:00 AM");
+    }
+
+    #[test]
+    fn format_noon_12h() {
+        // Noon = 12 * 3600
+        assert_eq!(format_time_at("%I:%M %p", 43200), "12:00 PM");
+    }
+
+    #[test]
+    fn format_no_placeholders() {
+        assert_eq!(format_time_at("Mantle", SAMPLE), "Mantle");
+    }
+
+    #[test]
+    fn build_commands_compiles() {
+        let _ = build_commands();
+    }
 }
 
 #[tauri::command]

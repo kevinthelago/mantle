@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
 import { getCurrentWindow } from '@tauri-apps/api/window'
@@ -7,7 +7,7 @@ import type { OutputConfig } from '../../types/config'
 import './bar-shell.css'
 
 /** Derives the output name from the Tauri window label ("bar-DP-1" → "DP-1"). */
-function outputFromLabel(label: string): string {
+export function outputFromLabel(label: string): string {
   return label.replace(/^bar-/, '') || '*'
 }
 
@@ -22,20 +22,23 @@ export default function BarShell() {
   const [config, setConfig] = useState<OutputConfig | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
+  const fetchConfig = useCallback(() => {
     invoke<OutputConfig>('get_output_config', { output: outputName })
       .then(setConfig)
       .catch((e) => setError(String(e)))
+  }, [outputName])
 
-    // Hot-reload: backend emits "config-changed" when the file changes.
-    const unlisten = listen<OutputConfig>('config-changed', (event) => {
-      setConfig(event.payload)
-    })
+  useEffect(() => {
+    fetchConfig()
+
+    // Hot-reload: backend emits "config-changed" (full Config) when the file
+    // changes.  Re-fetch to let the server resolve the right OutputConfig.
+    const unlisten = listen('config-changed', fetchConfig)
 
     return () => {
       unlisten.then((f) => f())
     }
-  }, [outputName])
+  }, [fetchConfig])
 
   if (error) {
     return <div className="bar-shell bar-shell--error">{error}</div>
