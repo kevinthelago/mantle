@@ -32,17 +32,11 @@ impl Default for Config {
 
 // ── General ──────────────────────────────────────────────────────────────────
 
-#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, Type)]
 #[serde(default)]
 pub struct GeneralConfig {
     /// Gap in pixels between bar edge and screen edge.
     pub gap: i32,
-}
-
-impl Default for GeneralConfig {
-    fn default() -> Self {
-        Self { gap: 0 }
-    }
 }
 
 // ── Per-output bar config ─────────────────────────────────────────────────────

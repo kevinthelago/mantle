@@ -176,25 +176,48 @@ pub async fn power_action(action: PowerAction) -> Result<(), BridgeError> {
         .map_err(|e| BridgeError::new("power-action", e.to_string()))
 }
 
-// ── Compositor stubs (replaced at merge by compositor stream) ─────────────────
+// ── Compositor commands ───────────────────────────────────────────────────────
 
 #[tauri::command]
 #[specta::specta]
 pub async fn get_workspace_state() -> Result<WorkspaceState, BridgeError> {
+    #[cfg(target_os = "linux")]
+    {
+        return crate::compositor::query_workspace_state()
+            .await
+            .map_err(|e| BridgeError::new("compositor", e.to_string()));
+    }
+    #[cfg(not(target_os = "linux"))]
     Ok(WorkspaceState::default())
 }
 
 #[tauri::command]
 #[specta::specta]
 pub async fn get_focused_window() -> Result<FocusedWindow, BridgeError> {
+    #[cfg(target_os = "linux")]
+    {
+        return crate::compositor::query_focused_window()
+            .await
+            .map_err(|e| BridgeError::new("compositor", e.to_string()));
+    }
+    #[cfg(not(target_os = "linux"))]
     Ok(FocusedWindow::default())
 }
 
 #[tauri::command]
 #[specta::specta]
 pub async fn compositor_dispatch(command: String) -> Result<(), BridgeError> {
-    drop(command);
-    Ok(())
+    #[cfg(target_os = "linux")]
+    {
+        return crate::compositor::dispatch_command(&command)
+            .await
+            .map_err(|e| BridgeError::new("compositor", e.to_string()));
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        drop(command);
+        Ok(())
+    }
 }
 
 // ── Builder factory ───────────────────────────────────────────────────────────

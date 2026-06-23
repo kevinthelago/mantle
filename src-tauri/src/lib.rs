@@ -1,4 +1,6 @@
 mod bridge;
+#[cfg(target_os = "linux")]
+mod compositor;
 mod config;
 pub mod launcher;
 mod layer_shell;
@@ -136,6 +138,9 @@ pub fn run() {
                     );
                     widgets_win.show().expect("failed to show widgets window");
                 }
+
+                // Subscribe to compositor events and relay them as Tauri events.
+                compositor::spawn_event_relay(app.handle().clone());
             }
 
             // On non-Linux (dev/CI), show the window normally.
