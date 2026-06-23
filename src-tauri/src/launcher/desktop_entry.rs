@@ -65,10 +65,14 @@ pub fn collect_entries() -> Vec<AppEntry> {
 
     Iter::new(dirs)
         .filter_map(|path| {
-            let bytes = std::fs::read(&path).ok()?;
-            let entry = DesktopEntry::decode(&path, &bytes).ok()?;
+            let content = std::fs::read_to_string(&path).ok()?;
+            let entry = DesktopEntry::decode(&path, &content).ok()?;
 
-            if entry.no_display() || entry.hidden() {
+            if entry.no_display()
+                || entry
+                    .desktop_entry("Hidden")
+                    .is_some_and(|v| v.eq_ignore_ascii_case("true"))
+            {
                 return None;
             }
             if entry.type_().unwrap_or("") != "Application" {
@@ -87,7 +91,7 @@ pub fn collect_entries() -> Vec<AppEntry> {
                 exec,
                 terminal: entry.terminal(),
                 categories: split_semicolons(entry.categories().unwrap_or("")),
-                keywords: split_semicolons(entry.keywords(locale_ref).unwrap_or("")),
+                keywords: split_semicolons(entry.keywords().as_deref().unwrap_or("")),
                 desktop_file: path.to_string_lossy().into_owned(),
             })
         })
