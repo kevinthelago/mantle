@@ -89,7 +89,10 @@ mod tests {
         let path = temp_config(&dir);
         write_defaults(&path).unwrap();
         let content = std::fs::read_to_string(&path).unwrap();
-        assert!(content.starts_with('#'), "config file should start with a comment");
+        assert!(
+            content.starts_with('#'),
+            "config file should start with a comment"
+        );
     }
 
     #[test]

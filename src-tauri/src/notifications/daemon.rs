@@ -243,8 +243,11 @@ impl NotificationsServer {
         -> zbus::Result<()>;
 
     #[zbus(signal)]
-    pub async fn action_invoked(ctx: &SignalContext<'_>, id: u32, action_key: &str)
-        -> zbus::Result<()>;
+    pub async fn action_invoked(
+        ctx: &SignalContext<'_>,
+        id: u32,
+        action_key: &str,
+    ) -> zbus::Result<()>;
 }
 
 // ── expiry task ─────────────────────────────────────────────────────────────

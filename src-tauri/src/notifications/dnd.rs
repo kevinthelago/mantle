@@ -51,7 +51,10 @@ mod tests {
         dnd.set_enabled(true).await;
         assert!(dnd.is_enabled().await);
         let event = rx.try_recv().expect("event was sent");
-        assert!(matches!(event, NotificationEvent::DndChanged { enabled: true }));
+        assert!(matches!(
+            event,
+            NotificationEvent::DndChanged { enabled: true }
+        ));
     }
 
     #[tokio::test]
@@ -62,7 +65,10 @@ mod tests {
         dnd.set_enabled(false).await;
         assert!(!dnd.is_enabled().await);
         let event = rx.try_recv().expect("event was sent");
-        assert!(matches!(event, NotificationEvent::DndChanged { enabled: false }));
+        assert!(matches!(
+            event,
+            NotificationEvent::DndChanged { enabled: false }
+        ));
     }
 
     #[tokio::test]
