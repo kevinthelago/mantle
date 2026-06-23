@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const mockLoadStyling = vi.fn();
-const mockInjectCss = vi.fn();
+const mockLoadStyling = vi.hoisted(() => vi.fn());
+const mockInjectCss = vi.hoisted(() => vi.fn());
 
 vi.mock("./bridge", () => ({ loadStyling: mockLoadStyling }));
 vi.mock("./injector", () => ({
