@@ -380,8 +380,7 @@ mod tests {
         let pos = NotificationPosition::TopRight;
         let s = serde_json::to_string(&pos).unwrap();
         assert_eq!(s, r#""top-right""#);
-        let back: NotificationPosition =
-            serde_json::from_str(r#""bottom-left""#).unwrap();
+        let back: NotificationPosition = serde_json::from_str(r#""bottom-left""#).unwrap();
         assert!(matches!(back, NotificationPosition::BottomLeft));
     }
 }
