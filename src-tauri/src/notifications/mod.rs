@@ -56,6 +56,37 @@ pub async fn start_daemon(
 pub fn plugin_init() -> tauri::plugin::TauriPlugin<tauri::Wry> {
     tauri::plugin::Builder::new("notifications")
         .setup(|app, _| {
+            // Initialize the notifications window as a layer-shell overlay surface
+            // so toast popups float above all other surfaces.
+            #[cfg(target_os = "linux")]
+            {
+                use crate::layer_shell::manager::{AnchorEdge, KeyboardHint, LayerHint, Margins};
+                use crate::layer_shell::{LayerShellManager, SurfaceConfig};
+                use tauri::Manager;
+
+                if let Some(win) = app.get_webview_window("notifications") {
+                    let cfg = SurfaceConfig {
+                        namespace: "mantle-notifications".to_string(),
+                        layer: LayerHint::Overlay,
+                        anchors: vec![AnchorEdge::Top, AnchorEdge::Right],
+                        exclusive_zone: 0,
+                        margins: Margins {
+                            top: 40,
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                        },
+                        keyboard_mode: KeyboardHint::None,
+                        output: None,
+                    };
+                    if let Err(e) = LayerShellManager::new().apply(&win, &cfg) {
+                        log::warn!("Failed to apply layer-shell to notifications window: {e}");
+                    }
+                } else {
+                    log::warn!("notifications window not found in tauri.conf.json");
+                }
+            }
+
             let app = app.clone();
             tauri::async_runtime::spawn(async move {
                 use tauri::Manager;

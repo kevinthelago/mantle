@@ -1,0 +1,7 @@
+/* Full-window transparent container for the notifications overlay surface. */
+.root {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  pointer-events: none;
+}
