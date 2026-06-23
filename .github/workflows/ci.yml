@@ -102,9 +102,9 @@ jobs:
       # Regenerates TS command bindings from Rust and fails if committed
       # files are out of date. Keeps the typed bridge always in sync.
       - name: Check tauri-specta bindings are up to date
-        if: hashFiles('src-tauri/Cargo.toml') != '' && hashFiles('src/lib/bridge') != ''
+        if: hashFiles('src-tauri/src/bin/generate_bindings.rs') != '' && hashFiles('src/lib/bridge/bindings.ts') != ''
         run: |
-          cargo test --manifest-path src-tauri/Cargo.toml export_bindings -- --exact
+          cargo run --manifest-path src-tauri/Cargo.toml --bin generate-bindings
           git diff --exit-code -- 'src/lib/bridge/'
 
       # ── Headless Wayland compositor (nested sway) ───────────────────────────
@@ -128,3 +128,77 @@ jobs:
       - name: Build frontend (production)
         if: hashFiles('package.json') != ''
         run: npm run build
+
+  # ── Nightly publish ─────────────────────────────────────────────────────────
+  # Runs after CI passes on every push to develop. Produces a raw binary and
+  # uploads it to the rolling "nightly" pre-release on GitHub so that
+  # install.sh --channel nightly resolves to this artifact.
+  nightly:
+    name: Publish nightly
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            build-essential curl libssl-dev \
+            libgtk-3-dev \
+            libwebkit2gtk-4.1-dev \
+            libjavascriptcoregtk-4.1-dev \
+            libsoup-3.0-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libgtk-layer-shell-dev \
+            libgtk-layer-shell0 \
+            gir1.2-gtklayershell-0.1
+
+      - name: Setup Rust (stable)
+        if: hashFiles('src-tauri/Cargo.toml') != ''
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Node.js 24
+        if: hashFiles('package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: ${{ hashFiles('package-lock.json') != '' && 'npm' || '' }}
+
+      - name: Cache Cargo
+        if: hashFiles('src-tauri/Cargo.toml') != ''
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: npm ci
+        if: hashFiles('package-lock.json') != ''
+        run: npm ci
+
+      - name: Build nightly binary
+        if: hashFiles('package-lock.json') != '' && hashFiles('src-tauri/Cargo.toml') != ''
+        run: npx tauri build --no-bundle
+
+      - name: Package nightly artifact
+        if: hashFiles('package-lock.json') != '' && hashFiles('src-tauri/Cargo.toml') != ''
+        run: |
+          mkdir -p dist
+          cp src-tauri/target/release/mantle dist/mantle_nightly_x86_64-linux
+          cd dist && sha256sum * > SHA256SUMS
+
+      - name: Publish nightly pre-release
+        if: hashFiles('package-lock.json') != '' && hashFiles('src-tauri/Cargo.toml') != ''
+        run: |
+          gh release delete nightly --yes --cleanup-tag 2>/dev/null || true
+          gh release create nightly \
+            --prerelease \
+            --title "nightly" \
+            --notes "Automated nightly build from \`develop\` ($(git rev-parse --short HEAD))" \
+            dist/*
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
