@@ -111,7 +111,7 @@ impl NotificationsServer {
         actions: Vec<String>,
         hints: HashMap<String, OwnedValue>,
         expire_timeout: i32,
-        #[zbus(signal_context)] ctx: SignalContext<'_>,
+        #[zbus(signal_context)] _ctx: SignalContext<'_>,
     ) -> zbus::fdo::Result<u32> {
         // Rate-limit: drop if too many active notifications.
         {
@@ -243,7 +243,7 @@ impl NotificationsServer {
         -> zbus::Result<()>;
 
     #[zbus(signal)]
-    async fn action_invoked(ctx: &SignalContext<'_>, id: u32, action_key: &str)
+    pub async fn action_invoked(ctx: &SignalContext<'_>, id: u32, action_key: &str)
         -> zbus::Result<()>;
 }
 
@@ -385,11 +385,11 @@ fn encode_raw_to_png(
     _bits: u32,
     channels: u32,
 ) -> Option<Vec<u8>> {
-    use image::{ColorType, ImageEncoder};
+    use image::{ExtendedColorType, ImageEncoder};
 
     let color_type = match (channels, has_alpha) {
-        (4, true) => ColorType::Rgba8,
-        (3, false) => ColorType::Rgb8,
+        (4, true) => ExtendedColorType::Rgba8,
+        (3, false) => ExtendedColorType::Rgb8,
         _ => return None,
     };
 
