@@ -53,9 +53,7 @@ describe('ListItem', () => {
   })
 
   it('renders description text', () => {
-    const html = renderToString(
-      createElement(ListItem, { description: 'Secondary text' }, 'Title'),
-    )
+    const html = renderToString(createElement(ListItem, { description: 'Secondary text' }, 'Title'))
     expect(html).toContain('Secondary text')
     expect(html).toContain('Title')
   })

@@ -29,9 +29,7 @@ function makeResult(name: string): SearchResult {
 
 describe('ResultsList', () => {
   it('renders nothing when results are empty', () => {
-    const { container } = render(
-      <ResultsList results={[]} selectedIndex={0} onSelect={vi.fn()} />,
-    )
+    const { container } = render(<ResultsList results={[]} selectedIndex={0} onSelect={vi.fn()} />)
     expect(container.firstChild).toBeNull()
   })
 
