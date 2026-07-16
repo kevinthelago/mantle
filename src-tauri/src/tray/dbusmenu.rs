@@ -182,7 +182,7 @@ fn parse_item(layout: &LayoutTuple) -> MenuItem {
 /// Each child in `av` is a D-Bus struct `(i32, a{sv}, av)` boxed as a Variant.
 fn parse_child_value(v: &OwnedValue) -> Option<MenuItem> {
     // Dereference through OwnedValue → Value and extract the inner structure.
-    let inner: &Value = &**v;
+    let inner: &Value = v;
     let s = match inner {
         Value::Structure(s) => s,
         _ => return None,
@@ -206,10 +206,10 @@ fn parse_child_value(v: &OwnedValue) -> Option<MenuItem> {
                         Value::Str(s) => s.to_string(),
                         _ => return None,
                     };
-                    // Wrap the value reference into an OwnedValue by going through serde.
-                    // zvariant's OwnedValue::from<Value> for non-'static lifetimes isn't
-                    // directly available, so we use try_into with the static lifetime variant.
-                    let owned: OwnedValue = OwnedValue::try_from(v.clone()).ok()?;
+                    // Wrap the value reference into an OwnedValue.  zvariant's `Value`
+                    // is deliberately not `Clone` (FD values can't be cloned), so this
+                    // borrows and converts via the static-lifetime `TryFrom` variant.
+                    let owned: OwnedValue = OwnedValue::try_from(v).ok()?;
                     Some((key, owned))
                 })
                 .collect()
@@ -221,7 +221,7 @@ fn parse_child_value(v: &OwnedValue) -> Option<MenuItem> {
     let children_raw: Vec<OwnedValue> = match &fields[2] {
         Value::Array(arr) => arr
             .iter()
-            .filter_map(|item| OwnedValue::try_from(item.clone()).ok())
+            .filter_map(|item| OwnedValue::try_from(item).ok())
             .collect(),
         _ => vec![],
     };
@@ -233,7 +233,7 @@ fn parse_child_value(v: &OwnedValue) -> Option<MenuItem> {
 
 fn str_prop(props: &PropMap, key: &str) -> Option<String> {
     let ov = props.get(key)?;
-    let inner: &Value = &**ov;
+    let inner: &Value = ov;
     match inner {
         Value::Str(s) => Some(s.to_string()),
         _ => None,
@@ -242,18 +242,18 @@ fn str_prop(props: &PropMap, key: &str) -> Option<String> {
 
 fn bool_prop(props: &PropMap, key: &str) -> Option<bool> {
     let ov = props.get(key)?;
-    let inner: &Value = &**ov;
+    let inner: &Value = ov;
     match inner {
-        Value::Bool(b) => Some(b),
+        Value::Bool(b) => Some(*b),
         _ => None,
     }
 }
 
 fn i32_prop(props: &PropMap, key: &str) -> Option<i32> {
     let ov = props.get(key)?;
-    let inner: &Value = &**ov;
+    let inner: &Value = ov;
     match inner {
-        Value::I32(n) => Some(n),
+        Value::I32(n) => Some(*n),
         _ => None,
     }
 }

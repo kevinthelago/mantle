@@ -115,7 +115,16 @@ impl LauncherService {
 }
 
 /// Spawn `program` with `args` as a detached process (new session, not a child).
+///
+/// Resolves `program` on PATH before spawning.  This is load-bearing on Linux:
+/// there we exec through `setsid`, so `Command::spawn` only reports whether
+/// *setsid* started — it always does.  A missing program then fails inside the
+/// detached child (exit 127), where we can never observe it, and the caller
+/// would see `Ok(())` for a command that never ran.  Resolving up front makes a
+/// bad program a real error on every platform.
 fn spawn_detached(program: &str, args: &[String]) -> Result<()> {
+    which::which(program).with_context(|| format!("command not found: {program}"))?;
+
     // On Linux we rely on setsid(1) to detach the process from our session so it
     // survives the launcher window closing and is never a direct child.
     #[cfg(target_os = "linux")]

@@ -136,12 +136,12 @@ impl WatcherImpl {
             };
             while let Some(signal) = stream.next().await {
                 let Ok(args) = signal.args() else { continue };
-                if args.new_owner().is_empty() {
+                if args.new_owner().is_none() {
                     let lost = args.name().to_owned();
                     let mut lock = items.lock().await;
                     let removed: Vec<String> = lock
                         .keys()
-                        .filter(|k| k.starts_with(&lost))
+                        .filter(|k| k.starts_with(&*lost))
                         .cloned()
                         .collect();
                     for key in removed {

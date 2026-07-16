@@ -197,8 +197,8 @@ pub async fn watch_item(
     on_change: impl Fn(TrayItem) + Send + 'static,
 ) {
     let props_proxy = match zbus::fdo::PropertiesProxy::builder(&conn)
-        .destination(&service)
-        .and_then(|b| b.path(&obj_path))
+        .destination(service.as_str())
+        .and_then(|b| b.path(obj_path.as_str()))
     {
         Ok(b) => match b.build().await {
             Ok(p) => p,

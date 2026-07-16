@@ -5,11 +5,16 @@
 /// them into the Tauri builder — so `main.rs` and `lib.rs` never change per service.
 ///
 /// # Example (in another crate/module):
-/// ```rust
+///
+/// Illustrative only — `ignore`d because it names a service module that does not
+/// exist here, so `cargo test --doc` cannot compile it.  See
+/// `launcher::plugin` for a real registration.
+///
+/// ```ignore
 /// inventory::submit! {
 ///     MantlePlugin {
 ///         name: "my-service",
-///         build: || my_service_plugin::init(),
+///         build: my_service_plugin::init,
 ///     }
 /// }
 /// ```

@@ -234,7 +234,7 @@ pub fn init<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
             mpris_prev,
         ])
         .setup(
-            |app: &AppHandle<R>, _api| -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+            |app: &AppHandle<R>, _api| -> Result<(), Box<dyn std::error::Error>> {
                 let service = MprisService::new();
                 app.manage(service.clone());
                 let handle = app.clone();

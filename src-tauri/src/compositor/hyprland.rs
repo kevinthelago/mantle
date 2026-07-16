@@ -51,7 +51,7 @@ pub async fn get_workspaces() -> anyhow::Result<WorkspaceState> {
     let workspaces = raw
         .into_iter()
         .map(|w| {
-            let focused = focused_ws_id.map_or(false, |id| id == w.id);
+            let focused = focused_ws_id.is_some_and(|id| id == w.id);
             Workspace {
                 id: w.id,
                 name: w.name,

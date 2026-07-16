@@ -57,7 +57,6 @@ fn shell_words_split(s: &str) -> Result<Vec<String>> {
 #[cfg(target_os = "linux")]
 pub fn collect_entries() -> Vec<AppEntry> {
     use freedesktop_desktop_entry::{DesktopEntry, Iter};
-    use std::path::PathBuf;
 
     let locale = current_locale();
     let locale_ref = locale.as_deref();

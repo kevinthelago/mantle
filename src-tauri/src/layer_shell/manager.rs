@@ -92,7 +92,6 @@ impl LayerShellManager {
         config: &SurfaceConfig,
         monitor: Option<&gdk::Monitor>,
     ) {
-        use gtk::prelude::*;
         use gtk_layer_shell::{Edge, KeyboardMode as GtkKb, Layer as GtkLayer, LayerShell};
 
         win.init_layer_shell();
@@ -106,7 +105,7 @@ impl LayerShellManager {
 
         let edges = [Edge::Top, Edge::Right, Edge::Bottom, Edge::Left];
         for (edge, &anchored) in edges.iter().zip(config.anchors.iter()) {
-            win.set_anchor(edge, anchored);
+            win.set_anchor(*edge, anchored);
         }
 
         match config.exclusive_zone {
