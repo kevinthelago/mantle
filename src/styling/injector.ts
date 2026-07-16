@@ -1,4 +1,4 @@
-const STYLE_ID = "mantle-css";
+const STYLE_ID = 'mantle-css'
 
 /**
  * Insert or replace the managed `<style id="mantle-css">` element.
@@ -7,16 +7,16 @@ const STYLE_ID = "mantle-css";
  * rather than appending a new element.
  */
 export function injectCss(css: string): void {
-  let el = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
+  let el = document.getElementById(STYLE_ID) as HTMLStyleElement | null
   if (!el) {
-    el = document.createElement("style");
-    el.id = STYLE_ID;
-    document.head.appendChild(el);
+    el = document.createElement('style')
+    el.id = STYLE_ID
+    document.head.appendChild(el)
   }
-  el.textContent = css;
+  el.textContent = css
 }
 
 /** Remove the managed style element. Useful for teardown and testing. */
 export function removeManagedStyle(): void {
-  document.getElementById(STYLE_ID)?.remove();
+  document.getElementById(STYLE_ID)?.remove()
 }

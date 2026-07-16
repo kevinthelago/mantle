@@ -1,6 +1,16 @@
 import { describe, it, expect } from 'vitest'
 import { generateTokensCSS, generateTailwindPreset } from './generate.js'
-import { palette, typeScale, spacing, radius, shadow, transition, zIndex, semanticDark, semanticLight } from './tokens.js'
+import {
+  palette,
+  typeScale,
+  spacing,
+  radius,
+  shadow,
+  transition,
+  zIndex,
+  semanticDark,
+  semanticLight,
+} from './tokens.js'
 
 describe('token exports', () => {
   it('exports palette with expected color groups', () => {
