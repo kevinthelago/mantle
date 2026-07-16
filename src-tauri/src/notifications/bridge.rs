@@ -45,7 +45,7 @@ pub async fn invoke_action(
     id: u32,
     action_key: String,
     server: State<'_, Arc<ServerState>>,
-    app: AppHandle,
+    _app: AppHandle,
 ) -> Result<(), String> {
     // Emit ActionInvoked over D-Bus (the originating app listens for this).
     if let Some(conn) = server.connection_ref() {
@@ -112,10 +112,8 @@ pub fn spawn_event_relay(
                         NotificationEvent::Added(n)
                         | NotificationEvent::Replaced {
                             notification: n, ..
-                        } => {
-                            if !n.transient {
-                                history.push(n.clone()).await;
-                            }
+                        } if !n.transient => {
+                            history.push(n.clone()).await;
                         }
                         _ => {}
                     }

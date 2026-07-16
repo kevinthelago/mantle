@@ -183,9 +183,9 @@ pub async fn power_action(action: PowerAction) -> Result<(), BridgeError> {
 pub async fn get_workspace_state() -> Result<WorkspaceState, BridgeError> {
     #[cfg(target_os = "linux")]
     {
-        return crate::compositor::query_workspace_state()
+        crate::compositor::query_workspace_state()
             .await
-            .map_err(|e| BridgeError::new("compositor", e.to_string()));
+            .map_err(|e| BridgeError::new("compositor", e.to_string()))
     }
     #[cfg(not(target_os = "linux"))]
     Ok(WorkspaceState::default())
@@ -196,9 +196,9 @@ pub async fn get_workspace_state() -> Result<WorkspaceState, BridgeError> {
 pub async fn get_focused_window() -> Result<FocusedWindow, BridgeError> {
     #[cfg(target_os = "linux")]
     {
-        return crate::compositor::query_focused_window()
+        crate::compositor::query_focused_window()
             .await
-            .map_err(|e| BridgeError::new("compositor", e.to_string()));
+            .map_err(|e| BridgeError::new("compositor", e.to_string()))
     }
     #[cfg(not(target_os = "linux"))]
     Ok(FocusedWindow::default())

@@ -11,7 +11,6 @@ pub use bridge::spawn_event_relay;
 pub use daemon::{NotificationsServer, ServerState};
 pub use dnd::DndState;
 pub use history::NotificationHistory;
-pub use types::NotificationEvent;
 
 /// Start the FDO notification daemon and return the shared state handles.
 pub async fn start_daemon(

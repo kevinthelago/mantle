@@ -98,6 +98,8 @@ fn read_brightness(dev_path: &Path) -> Option<BrightnessSnapshot> {
 
 pub struct BrightnessService {
     snapshot: Arc<Mutex<BrightnessSnapshot>>,
+    /// Retained for the `dev_path()` accessor; not read by the service itself.
+    #[allow(dead_code)]
     dev_path: Option<PathBuf>,
 }
 
@@ -126,6 +128,8 @@ impl BrightnessService {
         self.snapshot.lock().await.clone()
     }
 
+    /// Path of the backlight device backing this service, if one was found.
+    #[allow(dead_code)]
     pub fn dev_path(&self) -> Option<&Path> {
         self.dev_path.as_deref()
     }

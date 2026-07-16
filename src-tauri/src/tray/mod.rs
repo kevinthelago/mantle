@@ -175,7 +175,8 @@ pub async fn tray_item_activate(
     state: State<'_, Arc<TrayService>>,
 ) -> Result<(), String> {
     let lock = state.items.lock().await;
-    let item = lock.get(&key).ok_or_else(|| "item not found".to_owned())?;
+    // Verify the item is still registered before dispatching to it.
+    lock.get(&key).ok_or_else(|| "item not found".to_owned())?;
 
     let (service, obj_path) = split_key(&key);
     let proxy = zbus::Proxy::new(&state.conn, service, obj_path, "org.kde.StatusNotifierItem")
@@ -205,7 +206,7 @@ pub async fn tray_menu_event(
             .and_then(|i| i.menu_path.clone())
             .ok_or_else(|| "item or menu not found".to_owned())?
     };
-    crate::tray::dbusmenu::send_menu_event(&state.conn, &service, &menu_path, item_id, &event).await
+    crate::tray::dbusmenu::send_menu_event(&state.conn, service, &menu_path, item_id, &event).await
 }
 
 /// Re-fetch the menu tree for an item (call before opening a context menu).
@@ -222,7 +223,7 @@ pub async fn tray_refresh_menu(
     let Some(mp) = menu_path else {
         return Ok(None);
     };
-    let menu = crate::tray::dbusmenu::fetch_menu(&state.conn, &service, &mp)
+    let menu = crate::tray::dbusmenu::fetch_menu(&state.conn, service, &mp)
         .await
         .ok();
     // Store updated menu.

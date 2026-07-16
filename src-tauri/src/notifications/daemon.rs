@@ -101,6 +101,8 @@ pub struct NotificationsServer {
 
 #[interface(name = "org.freedesktop.Notifications")]
 impl NotificationsServer {
+    // Argument list is fixed by the org.freedesktop.Notifications D-Bus contract.
+    #[allow(clippy::too_many_arguments)]
     async fn notify(
         &mut self,
         app_name: &str,
