@@ -244,7 +244,7 @@ fn bool_prop(props: &PropMap, key: &str) -> Option<bool> {
     let ov = props.get(key)?;
     let inner: &Value = &**ov;
     match inner {
-        Value::Bool(b) => Some(b),
+        Value::Bool(b) => Some(*b),
         _ => None,
     }
 }
@@ -253,7 +253,7 @@ fn i32_prop(props: &PropMap, key: &str) -> Option<i32> {
     let ov = props.get(key)?;
     let inner: &Value = &**ov;
     match inner {
-        Value::I32(n) => Some(n),
+        Value::I32(n) => Some(*n),
         _ => None,
     }
 }

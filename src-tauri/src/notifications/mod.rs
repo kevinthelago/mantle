@@ -7,11 +7,7 @@ pub mod types;
 
 use std::sync::Arc;
 
-pub use bridge::{
-    clear_notification_history, dismiss_notification, get_active_notifications, get_dnd_enabled,
-    get_notification_history, invoke_action, pause_notification_expiry, resume_notification_expiry,
-    set_dnd_enabled, spawn_event_relay,
-};
+pub use bridge::spawn_event_relay;
 pub use daemon::{NotificationsServer, ServerState};
 pub use dnd::DndState;
 pub use history::NotificationHistory;
@@ -107,15 +103,15 @@ pub fn plugin_init() -> tauri::plugin::TauriPlugin<tauri::Wry> {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            get_active_notifications,
-            get_notification_history,
-            get_dnd_enabled,
-            dismiss_notification,
-            invoke_action,
-            pause_notification_expiry,
-            resume_notification_expiry,
-            set_dnd_enabled,
-            clear_notification_history,
+            bridge::get_active_notifications,
+            bridge::get_notification_history,
+            bridge::get_dnd_enabled,
+            bridge::dismiss_notification,
+            bridge::invoke_action,
+            bridge::pause_notification_expiry,
+            bridge::resume_notification_expiry,
+            bridge::set_dnd_enabled,
+            bridge::clear_notification_history,
         ])
         .build()
 }

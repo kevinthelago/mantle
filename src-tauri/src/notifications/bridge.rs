@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use tauri::{AppHandle, Manager, State};
+use tauri::{AppHandle, Emitter, State};
 
 use super::daemon::ServerState;
 use super::dnd::DndState;
