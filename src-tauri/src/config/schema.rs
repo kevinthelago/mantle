@@ -155,8 +155,10 @@ pub enum KeyboardMode {
 #[serde(default)]
 pub struct ClockConfig {
     pub format: String,
-    /// Update interval in milliseconds.
-    pub interval: u64,
+    /// Update interval in milliseconds.  `u32` (not `u64`) because Specta
+    /// refuses to export BigInt-style types to TypeScript, and ~49 days of
+    /// milliseconds is far more range than a clock tick needs.
+    pub interval: u32,
     pub timezone: Option<String>,
 }
 
@@ -228,8 +230,9 @@ pub enum PowerAction {
 pub struct NotificationsConfig {
     pub position: NotificationPosition,
     pub max_visible: u32,
-    /// Dismiss timeout in milliseconds; 0 = never auto-dismiss.
-    pub timeout: u64,
+    /// Dismiss timeout in milliseconds; 0 = never auto-dismiss.  `u32` for the
+    /// same reason as `ClockConfig::interval`.
+    pub timeout: u32,
 }
 
 impl Default for NotificationsConfig {
