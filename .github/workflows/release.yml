@@ -73,22 +73,27 @@ jobs:
           BINARY="src-tauri/target/release/mantle"
           VERSION="${GITHUB_REF_NAME}"   # e.g. v1.2.3
 
-          mkdir -p dist
+          # Stage into `artifacts/`, NOT `dist/` — `dist/` is Vite's frontend
+          # output (tauri.conf.json `frontendDist`), which `tauri build`
+          # repopulates with index.html + assets/.  Staging there made
+          # `sha256sum *` fail on the assets directory, and would have uploaded
+          # the frontend bundle as release assets.
+          mkdir -p artifacts
 
           # AppImage
-          find "$BUNDLE_DIR/appimage" -name "*.AppImage" -exec cp {} "dist/mantle_${VERSION}_amd64.AppImage" \; 2>/dev/null || true
+          find "$BUNDLE_DIR/appimage" -name "*.AppImage" -exec cp {} "artifacts/mantle_${VERSION}_amd64.AppImage" \; 2>/dev/null || true
 
           # Debian package
-          find "$BUNDLE_DIR/deb" -name "*.deb" -exec cp {} "dist/mantle_${VERSION}_amd64.deb" \; 2>/dev/null || true
+          find "$BUNDLE_DIR/deb" -name "*.deb" -exec cp {} "artifacts/mantle_${VERSION}_amd64.deb" \; 2>/dev/null || true
 
           # RPM package
-          find "$BUNDLE_DIR/rpm" -name "*.rpm" -exec cp {} "dist/mantle-${VERSION}-1.x86_64.rpm" \; 2>/dev/null || true
+          find "$BUNDLE_DIR/rpm" -name "*.rpm" -exec cp {} "artifacts/mantle-${VERSION}-1.x86_64.rpm" \; 2>/dev/null || true
 
           # Raw binary
-          [ -f "$BINARY" ] && cp "$BINARY" "dist/mantle_${VERSION}_x86_64-linux" || true
+          [ -f "$BINARY" ] && cp "$BINARY" "artifacts/mantle_${VERSION}_x86_64-linux" || true
 
           # Checksums
-          cd dist && sha256sum * > SHA256SUMS
+          cd artifacts && sha256sum * > SHA256SUMS
 
           echo "dist_dir=$(pwd)" >> "$GITHUB_OUTPUT"
           ls -lh
@@ -99,7 +104,7 @@ jobs:
           gh release create "$GITHUB_REF_NAME" \
             --title "mantle $GITHUB_REF_NAME" \
             --generate-notes \
-            dist/*
+            artifacts/*
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

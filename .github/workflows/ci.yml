@@ -184,12 +184,16 @@ jobs:
         if: hashFiles('package-lock.json') != '' && hashFiles('src-tauri/Cargo.toml') != ''
         run: npx tauri build --no-bundle
 
+      # Stage into `artifacts/`, NOT `dist/` — `dist/` is Vite's frontend output
+      # (tauri.conf.json `frontendDist`), which `tauri build` repopulates with
+      # index.html + assets/.  Staging there made `sha256sum *` fail on the
+      # assets directory, so this job never published anything.
       - name: Package nightly artifact
         if: hashFiles('package-lock.json') != '' && hashFiles('src-tauri/Cargo.toml') != ''
         run: |
-          mkdir -p dist
-          cp src-tauri/target/release/mantle dist/mantle_nightly_x86_64-linux
-          cd dist && sha256sum * > SHA256SUMS
+          mkdir -p artifacts
+          cp src-tauri/target/release/mantle artifacts/mantle_nightly_x86_64-linux
+          cd artifacts && sha256sum * > SHA256SUMS
 
       - name: Publish nightly pre-release
         if: hashFiles('package-lock.json') != '' && hashFiles('src-tauri/Cargo.toml') != ''
@@ -199,6 +203,6 @@ jobs:
             --prerelease \
             --title "nightly" \
             --notes "Automated nightly build from \`develop\` ($(git rev-parse --short HEAD))" \
-            dist/*
+            artifacts/*
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
