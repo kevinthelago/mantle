@@ -131,6 +131,37 @@ impl LayerShellManager {
         }
     }
 
+    /// Enumerate connected monitors as `(output_name, gdk::Monitor)` pairs for
+    /// per-output surface placement.
+    ///
+    /// The name prefers the monitor model, falling back to `output-<index>`.
+    /// GTK3's `gdk::Monitor` does not expose the compositor connector name
+    /// (e.g. "DP-1"), so the model is the best available identifier here — the
+    /// caller should treat it as opaque and dedupe labels.  Empty if no display
+    /// is available.
+    ///
+    /// **Must be called on the GTK main thread after GTK is initialized**
+    /// (i.e. from Tauri's `setup`); unlike [`list_monitors`], it does not call
+    /// `gtk::init()`.
+    #[cfg(target_os = "linux")]
+    pub fn monitor_handles() -> Vec<(String, gdk::Monitor)> {
+        use gtk::prelude::*;
+        let Some(display) = gdk::Display::default() else {
+            return vec![];
+        };
+        (0..display.n_monitors())
+            .filter_map(|i| display.monitor(i).map(|m| (i, m)))
+            .map(|(i, mon)| {
+                let name = mon
+                    .model()
+                    .map(|s| s.to_string())
+                    .filter(|s| !s.is_empty())
+                    .unwrap_or_else(|| format!("output-{i}"));
+                (name, mon)
+            })
+            .collect()
+    }
+
     /// Enumerate all connected GDK monitors.  Returns empty vec on non-Linux.
     pub fn list_monitors() -> Vec<MonitorInfo> {
         #[cfg(target_os = "linux")]

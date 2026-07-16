@@ -9,7 +9,7 @@ pub mod usage_store;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
-pub use plugin::setup_surface;
+pub use plugin::{setup_surface, toggle_launcher};
 pub use service::LauncherService;
 pub use types::*;
 
