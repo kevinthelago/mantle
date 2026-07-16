@@ -2,6 +2,6 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Default capability for the Mantle bar",
-  "windows": ["bar", "bar-*", "widgets"],
+  "windows": ["bar", "bar-*", "widgets", "launcher", "notifications"],
   "permissions": ["core:default", "shell:default"]
 }

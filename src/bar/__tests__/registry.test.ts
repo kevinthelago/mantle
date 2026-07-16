@@ -14,11 +14,20 @@ describe('resolveModule', () => {
     expect(resolveModule('')).toBeNull()
   })
 
-  it('KNOWN_MODULES contains the expected module names', () => {
-    expect(KNOWN_MODULES).toContain('clock')
-    expect(KNOWN_MODULES).toContain('workspaces')
-    expect(KNOWN_MODULES).toContain('window-title')
-    expect(KNOWN_MODULES).toContain('power-menu')
+  it('KNOWN_MODULES contains all nine bar modules', () => {
+    expect([...KNOWN_MODULES].sort()).toEqual(
+      [
+        'audio',
+        'battery',
+        'brightness',
+        'clock',
+        'network',
+        'power-menu',
+        'tray',
+        'window-title',
+        'workspaces',
+      ].sort(),
+    )
   })
 
   it('returns the same lazy component on repeated calls for the same name', () => {

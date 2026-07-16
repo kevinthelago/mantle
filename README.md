@@ -70,6 +70,23 @@ cd mantle
 # install dependencies and run the project's build/test/dev commands
 ```
 
+### Optional: PipeWire audio module
+
+The audio bar module (volume/mute/sink) is built on the native `pipewire` crate
+and is gated behind the **non-default** `pipewire-audio` Cargo feature, so a stock
+`npm run tauri:build` leaves it out and the `audio` bar module simply renders
+nothing. To include it:
+
+```bash
+# adds the pipewire dev headers (Debian/Ubuntu)
+sudo apt-get install -y libpipewire-0.3-dev
+# build with the audio backend enabled
+npm run tauri:build:audio
+```
+
+Without the feature the rest of the shell is unaffected — every other bar module,
+the launcher, widgets, and notifications work as normal.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) and our [Code of Conduct](CODE_OF_CONDUCT.md).

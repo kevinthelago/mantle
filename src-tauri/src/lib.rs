@@ -45,6 +45,92 @@ async fn load_styling(
         .map_err(|e| e.to_string())
 }
 
+/// Replace any character not allowed in a Tauri window label with `-`.
+/// Labels permit ASCII alphanumerics plus `-` and `_`.
+#[cfg(target_os = "linux")]
+fn sanitize_label(s: &str) -> String {
+    s.chars()
+        .map(|c| {
+            if c.is_ascii_alphanumeric() || c == '-' || c == '_' {
+                c
+            } else {
+                '-'
+            }
+        })
+        .collect()
+}
+
+/// Spawn one layer-shell bar window per connected output.
+///
+/// Each bar is a runtime-created webview labeled `bar-<output>`, pinned to its
+/// `gdk::Monitor`, and given the standard top-bar layer-shell config.  Labels
+/// are deduped so identical monitor models don't collide.  Returns the number
+/// of bars successfully shown; `0` means the caller should fall back to the
+/// single static `bar` window.
+///
+/// Note: GTK3 exposes only the monitor model, not the compositor connector, so
+/// `<output>` is the model (or `output-<index>`).  Per-output config still
+/// resolves via `OutputConfig::resolve`, which falls back to the `*` wildcard
+/// for unmatched names.
+#[cfg(target_os = "linux")]
+fn spawn_output_bars<M: tauri::Manager<tauri::Wry>>(manager: &M) -> usize {
+    use tauri::{WebviewUrl, WebviewWindowBuilder};
+
+    let monitors = layer_shell::LayerShellManager::monitor_handles();
+    let mut used = std::collections::HashSet::new();
+    let mut shown = 0;
+
+    for (i, (output, monitor)) in monitors.iter().enumerate() {
+        // Derive a unique, label-safe suffix for this output.
+        let mut suffix = sanitize_label(output);
+        if suffix.is_empty() {
+            suffix = format!("output-{i}");
+        }
+        if !used.insert(suffix.clone()) {
+            suffix = format!("{suffix}-{i}");
+            used.insert(suffix.clone());
+        }
+        let label = format!("bar-{suffix}");
+
+        let win = match WebviewWindowBuilder::new(
+            manager,
+            label.clone(),
+            WebviewUrl::App("index.html".into()),
+        )
+        .visible(false)
+        .decorations(false)
+        .transparent(true)
+        .resizable(false)
+        .skip_taskbar(true)
+        .inner_size(1920.0, 36.0)
+        .build()
+        {
+            Ok(w) => w,
+            Err(e) => {
+                log::error!("bar window for output '{output}' ({label}) failed to build: {e}");
+                continue;
+            }
+        };
+
+        let gtk_win = match win.gtk_window() {
+            Ok(g) => g,
+            Err(e) => {
+                log::error!("GTK window for '{label}' unavailable: {e}");
+                continue;
+            }
+        };
+        let config = layer_shell::SurfaceConfig::top_bar(36, format!("mantle-{label}"));
+        layer_shell::LayerShellManager::apply_to_window(&gtk_win, &config, Some(monitor));
+        if let Err(e) = win.show() {
+            log::error!("showing bar '{label}' failed: {e}");
+            continue;
+        }
+        shown += 1;
+    }
+
+    shown
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
@@ -100,17 +186,23 @@ pub fn run() {
                 });
             }
 
-            // Path A: apply layer-shell before the bar window is shown.
+            // Path A: apply layer-shell before each bar window is shown.
             #[cfg(target_os = "linux")]
             {
-                let win = app
-                    .get_webview_window("bar")
-                    .expect("bar window defined in tauri.conf.json");
-
-                let gtk_win = win.gtk_window().expect("failed to get GTK window for bar");
-                let bar_config = layer_shell::SurfaceConfig::top_bar(36, "mantle-bar");
-                layer_shell::LayerShellManager::apply_to_window(&gtk_win, &bar_config, None);
-                win.show().expect("failed to show bar window");
+                // One layer-shell bar per connected output, each pinned to its
+                // monitor and labeled `bar-<output>` (resolved by the App.tsx
+                // surface router + BarShell::outputFromLabel).  Falls back to the
+                // static "bar" window from tauri.conf.json if no monitors could
+                // be enumerated.
+                if spawn_output_bars(app.handle()) == 0 {
+                    let win = app
+                        .get_webview_window("bar")
+                        .expect("bar window defined in tauri.conf.json");
+                    let gtk_win = win.gtk_window().expect("failed to get GTK window for bar");
+                    let bar_config = layer_shell::SurfaceConfig::top_bar(36, "mantle-bar");
+                    layer_shell::LayerShellManager::apply_to_window(&gtk_win, &bar_config, None);
+                    win.show().expect("failed to show bar window");
+                }
 
                 if let Some(launcher_win) = app.get_webview_window("launcher") {
                     launcher::setup_surface(&launcher_win)
@@ -151,6 +243,38 @@ pub fn run() {
                 }
                 if let Some(win) = app.get_webview_window("widgets") {
                     let _ = win.show();
+                }
+            }
+
+            // Global shortcut: Super+Space toggles the app launcher, which
+            // starts hidden (see launcher::setup_surface).
+            //
+            // NOTE: native Wayland compositors (sway/Hyprland) own global key
+            // bindings, so this app-registered shortcut only fires under
+            // X11/XWayland.  On Wayland, bind a key in the compositor config to
+            // a command that toggles the launcher instead.
+            #[cfg(desktop)]
+            {
+                use tauri_plugin_global_shortcut::{
+                    Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState,
+                };
+
+                let plugin = tauri_plugin_global_shortcut::Builder::new()
+                    .with_handler(|app, _shortcut, event| {
+                        // Only Super+Space is registered, so any press toggles.
+                        if event.state() == ShortcutState::Pressed {
+                            launcher::toggle_launcher(app);
+                        }
+                    })
+                    .build();
+
+                if let Err(e) = app.handle().plugin(plugin) {
+                    log::warn!("global-shortcut plugin unavailable: {e}");
+                } else if let Err(e) = app
+                    .global_shortcut()
+                    .register(Shortcut::new(Some(Modifiers::SUPER), Code::Space))
+                {
+                    log::warn!("could not bind launcher shortcut (Super+Space): {e}");
                 }
             }
 
